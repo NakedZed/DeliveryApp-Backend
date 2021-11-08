@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('../utils/appError');
 const { Storage } = require('@google-cloud/storage');
+const ErrorMsgs = require('../utils/ErrorMsgsConstants');
 
 ///////
 const storage = new Storage({
@@ -30,6 +31,37 @@ createSendToken = (user, statusCode, res) => {
   });
 };
 exports.signup = catchAsync(async (req, res, next) => {
+  let { username, email, phone, userType } = req.body;
+
+  //Checking for unqiueness of username
+  if (username) {
+    let username = await User.findOne({ username: req.body.username });
+    if (username) {
+      return next(new AppError(ErrorMsgs.DUPLICATE_USERNAME, 400));
+    }
+  }
+  //Checking for uniquness of phone number
+  if (phone) {
+    let phone = await User.findOne({ phone: req.body.phone });
+    if (phone) {
+      return next(new AppError(ErrorMsgs.DUPLICATE_PHONE, 400));
+    }
+  }
+  /////////////////////////////////////////////
+  //Handle comparing passwords
+  if (req.body.password !== req.body.passwordConfirm) {
+    return next(new AppError(ErrorMsgs.COMPARE_PASSWORD));
+  }
+  if (!username) {
+    return next(new AppError(ErrorMsgs.NO_USERNAME, 400));
+  }
+  if (!phone) {
+    return next(new AppError(ErrorMsgs.NO_PHONE, 400));
+  }
+  if (!userType) {
+    return next(new AppError(ErrorMsgs.NO_USERTYPE, 400));
+  }
+
   //   if (req.file) {
   //     const blob = bucket.file(`users/${req.file.originalname}`);
   //     const blobStream = blob.createWriteStream();
@@ -52,35 +84,20 @@ exports.signup = catchAsync(async (req, res, next) => {
 exports.loginWithPhone = catchAsync(async (req, res, next) => {
   console.log(req.body);
   const { phone, password } = req.body;
-  if (req.body.phone.length !== 11 && req.query.lang === 'ar') {
-    return next(new AppError('.من فضلك ادخل رقم الهاتف  وكلمة السر'));
-  }
   if (req.body.phone.length !== 11) {
-    return next(
-      new AppError('Please provide a valid phone number and password!', 400)
-    );
+    return next(new AppError(ErrorMsgs.INVALID_PHONE, 400));
   }
+
   if (!phone || !password) {
-    return next(new AppError('Please provide phone number and password!', 400));
-  }
-  if ((!phone || !password) && req.query.lang === 'ar') {
-    return next(new AppError('.من فضلك ادخل رقم الهاتف  وكلمة السر'));
+    return next(new AppError(ErrorMsgs.NO_PHONE_OR_PASSWORD));
   }
   //we need to check if email and password exists
-
   //check if user exists && password is correct
   const user = await User.findOne({ phone });
 
   //Handling incorrect password for arabic
-  if (
-    !user ||
-    (!(await user.correctPassword(password, user.password)) &&
-      req.query.lang === 'ar')
-  ) {
-    return next(new AppError('كلمة المرور او رقم الهاتف غير صحيح'));
-  }
   if (!user || !(await user.correctPassword(password, user.password))) {
-    return next(new AppError('Incorrect password or phone number', 401));
+    return next(new AppError(ErrorMsgs.INVALID_PHONE_OR_PASSWORD));
   }
   //if everything is ok, send the token to the client
   const token = signToken(user._id);
@@ -101,18 +118,9 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
     !(await foundUser.correctPassword(
       req.body.passwordCurrent,
       foundUser.password
-    )) &&
-    req.query.lang === 'ar'
-  ) {
-    return next(new AppError('كلمة المرور غير متطابقة'));
-  }
-  if (
-    !(await foundUser.correctPassword(
-      req.body.passwordCurrent,
-      foundUser.password
     ))
   ) {
-    return next(new AppError('Passwords are not matched!', 401));
+    return next(new AppError(ErrorMsgs.COMPARE_PASSWORD, 400));
   }
   //3)If so, update the password
   foundUser.password = req.body.password;
