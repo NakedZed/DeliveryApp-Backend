@@ -2,6 +2,8 @@ const express = require('express');
 const compression = require('compression');
 const cors = require('cors');
 const userRouter = require('./routes/userRouter');
+const shopRouter = require('./routes/shopRouter');
+const AppError = require('./utils/appError');
 
 const app = express();
 app.use(express.urlencoded({ extended: true }));
@@ -16,6 +18,7 @@ app.use(compression());
 
 app.options('*', cors());
 app.use('/api/v1/users', userRouter); //Request will hit this first and then match with one of userRouters.
+app.use('/api/v1/shops', shopRouter); //Request will hit this first and then match with one of shopRouters.
 
 //If there is no matching route this middleware will be FIRED!
 app.all('*', (req, res, next) => {

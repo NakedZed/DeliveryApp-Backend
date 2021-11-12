@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router(); //We created sub application for users
-const app = require('../app');
-const { uploadPhoto, resizePhoto } = require('./../controllers/userController');
+
+const { uploadPhoto, resizePhoto } = require('../utils/multerConfiguration');
 const {
   signup,
   updatePassword,
@@ -13,6 +13,7 @@ let {
   getAllUsers,
   getUserById,
   getUserByType,
+  updateUserById,
 } = require('./../controllers/userController');
 
 //Passing uploaduserphoto and resizeuserphoto middlewares before signing up
@@ -22,6 +23,6 @@ router.post('/loginWithPhone', loginWithPhone);
 router.get('/type', getUserByType);
 
 router.route('/').get(getAllUsers);
-router.route('/user').get(getUserById);
+router.route('/user').get(getUserById).patch(updateUserById);
 
 module.exports = router;

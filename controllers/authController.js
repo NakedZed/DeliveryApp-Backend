@@ -1,9 +1,9 @@
 const User = require('./../models/userModel');
 const { promisify } = require('util');
-const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('../utils/appError');
+const { format } = require('util');
 const { Storage } = require('@google-cloud/storage');
 const ErrorMsgs = require('../utils/ErrorMsgsConstants');
 
@@ -62,24 +62,24 @@ exports.signup = catchAsync(async (req, res, next) => {
     return next(new AppError(ErrorMsgs.NO_USERTYPE, 400));
   }
 
-  //   if (req.file) {
-  //     const blob = bucket.file(`users/${req.file.originalname}`);
-  //     const blobStream = blob.createWriteStream();
-  //     blobStream.on('finish', async () => {
-  //       // The public URL can be used to directly access the file via HTTP.
-  //       publicUrl = format(
-  //         `https://storage.googleapis.com/${bucket.name}/${blob.name}`
-  //       );
-  //     });
-  //     let photoUrl = `https://storage.googleapis.com/${bucket.name}/users/${req.file.originalname}`;
-  //     let wholeBody = { ...req.body, photo: photoUrl };
-  //     let newUser = await User.create(wholeBody);
-  //     createSendToken(newUser, 201, res);
-  //     blobStream.end(req.file.buffer);
-  //   } else {
-  let newUser = await User.create(req.body);
-  createSendToken(newUser, 201, res);
-  //   }
+  if (req.file) {
+    const blob = bucket.file(`users/${req.file.originalname}`);
+    const blobStream = blob.createWriteStream();
+    blobStream.on('finish', async () => {
+      // The public URL can be used to directly access the file via HTTP.
+      publicUrl = format(
+        `https://storage.googleapis.com/${bucket.name}/${blob.name}`
+      );
+    });
+    let photoUrl = `https://storage.googleapis.com/${bucket.name}/users/${req.file.originalname}`;
+    let wholeBody = { ...req.body, photo: photoUrl };
+    let newUser = await User.create(wholeBody);
+    createSendToken(newUser, 201, res);
+    blobStream.end(req.file.buffer);
+  } else {
+    let newUser = await User.create(req.body);
+    createSendToken(newUser, 201, res);
+  }
 });
 exports.loginWithPhone = catchAsync(async (req, res, next) => {
   console.log(req.body);

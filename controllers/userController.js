@@ -1,48 +1,17 @@
 const AppError = require('../utils/appError');
 const User = require('./../models/userModel');
-let multer = require('multer');
-const admin = require('firebase-admin');
-//package for resizing and handling images
+const { format } = require('util');
 const catchAsync = require('../utils/catchAsync');
-const { Storage } = require('@google-cloud/storage');
 const ErrorMsgs = require('./../utils/ErrorMsgsConstants');
-
-// MULTER CONFIGURATION SECTION
-const multerStorage = multer.memoryStorage();
-//To make sure that the uploaded file is an image
-const multerFilter = (req, file, cb) => {
-  if (file.mimetype.startsWith('image')) {
-    cb(null, true);
-  } else {
-    cb(new AppError('Not an image! Please upload only images.', 400), false);
-  }
-};
-const storage = new Storage({
-  projectId: 'delivery-app-5e621',
-  keyFilename: 'delivery-app-5e621-firebase-adminsdk-kjin7-465d741a9b.json',
-});
-
-const bucket = storage.bucket('gs://delivery-app-5e621.appspot.com');
-
-const upload = multer({ storage: multerStorage, fileFilter: multerFilter });
-
-//We are creating and exporting a middleware to upload a single photo for a user
-exports.uploadPhoto = upload.single('photo');
-
-exports.resizePhoto = catchAsync(async (req, res, next) => {
-  if (!req.file) return next();
-  console.log('reqfile>>>>>>>>>>>', req.file);
-  const extension = req.file.mimetype.split('/')[1];
-  req.file.filename = `user-${Date.now()}.${extension}`; //Added it to the req to be able to use it in the next middlewares Ex:(signup handle)
-  next();
-});
+const { bucket } = require('../utils/firebaseConfiguration');
 
 //@desc Get All Users
 //@route Get /api/v1/users
 //access PUBLIC
 
 exports.getAllUsers = catchAsync(async (req, res, next) => {
-  let users = await User.find();
+  //We pass object with key(Field we wanna return or not) : Value -> 0 dont return it with the result , 1 return it
+  let users = await User.find({}, { password: 0 });
   res.status(200).json({
     status: 'success',
     users,
@@ -52,7 +21,6 @@ exports.getAllUsers = catchAsync(async (req, res, next) => {
 //@desc Get Users By ID
 //@route Get /api/v1/users/user
 //access PUBLIC
-
 exports.getUserById = catchAsync(async (req, res, next) => {
   let { userId } = req.query;
   if (!userId) {
@@ -70,13 +38,74 @@ exports.getUserById = catchAsync(async (req, res, next) => {
 //access PUBLIC
 exports.getUserByType = catchAsync(async (req, res, next) => {
   let { userType } = req.query;
+  let userTypeArray = ['User', 'Vendor', 'Star'];
 
   if (!userType) {
     return next(new AppError(ErrorMsgs.NO_USERTYPE, 400));
   }
+  !userTypeArray.includes(userType)
+    ? next(new AppError(ErrorMsgs.NO_USERTYPE, 400))
+    : (userType = userType);
+
   let users = await User.find({ userType });
+
   res.status(200).json({
     status: 'success',
     users,
   });
+});
+
+//@desc Update User By ID
+//@route PATCH /api/v1/users/user
+//access PUBLIC
+exports.updateUserById = catchAsync(async (req, res, next) => {
+  let { userId } = req.query;
+  if (req.file) {
+    const blob = bucket.file(`users/${req.file.originalname}`);
+    const blobStream = blob.createWriteStream();
+    blobStream.on('finish', async () => {
+      // The public URL can be used to directly access the file via HTTP.
+      publicUrl = format(
+        `https://storage.googleapis.com/${bucket.name}/${blob.name}`
+      );
+    });
+
+    let photoUrl = `https://storage.googleapis.com/${bucket.name}/users/${req.file.originalname}`;
+    let wholeBody = { ...req.body, photo: photoUrl };
+
+    const updatedUser = await User.findOneAndUpdate(
+      { _id: userId },
+      wholeBody,
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+    res.status(200).json({
+      status: 'success',
+      updatedUser,
+    });
+    blobStream.end(req.file.buffer);
+  } else {
+    let reqBodyLength = Object.keys(req.body).length;
+
+    if (reqBodyLength === 0) {
+      return next(new AppError(ErrorMsgs.NO_BODY, 400));
+    }
+    if (!userId) {
+      return next(new AppError(ErrorMsgs.NO_USER_ID, 400));
+    }
+    const updatedUser = await User.findOneAndUpdate(
+      { _id: req.query.userId },
+      req.body,
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+    res.status(200).json({
+      status: 'success',
+      updatedUser,
+    });
+  }
 });
