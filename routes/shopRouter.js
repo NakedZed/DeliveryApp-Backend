@@ -6,10 +6,8 @@ const {
   getAllShops,
   getShopById,
   getShopsByCategory,
-  getSubCategoriesForShop,
 } = require('../controllers/shopController');
 
-router.route('/subCategories').get(getSubCategoriesForShop);
 router.get('/shopsForCategory', getShopsByCategory); //Get all shops by a category ID
 router.route('/').get(getAllShops);
 router.route('/:shopId').get(getShopById);

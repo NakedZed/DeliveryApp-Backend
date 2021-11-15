@@ -41,7 +41,6 @@ exports.getShopById = catchAsync(async (req, res, next) => {
   let shop = await Shop.findById(req.params.shopId)
     .populate('owner')
     .populate('category')
-    .populate('subCategories')
     .exec();
   res.status(200).json({
     status: 'success',
@@ -55,22 +54,9 @@ exports.getShopsByCategory = catchAsync(async (req, res, next) => {
   let shops = await Shop.find({ category: req.query.categoryId })
     .populate('owner')
     .populate('category')
-    .populate('subCategories')
     .exec();
   res.status(200).json({
     status: 'success',
     shops,
-  });
-});
-//@desc get subCategories for shop by passing shop id
-//@route GET /api/v1/shops/subCategories
-//access PUBLIC
-exports.getSubCategoriesForShop = catchAsync(async (req, res, next) => {
-  let shop = await Shop.findById(req.query.shopId).populate('subCategories');
-  let subCategories = shop.subCategories;
-
-  res.status(200).json({
-    status: 'success',
-    subCategories,
   });
 });

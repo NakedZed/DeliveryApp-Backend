@@ -15,22 +15,22 @@ exports.createCategory = catchAsync(async (req, res, next) => {
   });
 });
 
-//@desc get all subcategories
-//@route POST /api/v1/category/subCategories
-//access PUBLIC
-exports.getAllSubCategories = catchAsync(async (req, res, next) => {
-  let categories = await Category.find({ isSubCategory: true });
-  res.status(200).json({
-    status: 'success',
-    categories,
-  });
-});
+// //@desc get all subcategories
+// //@route POST /api/v1/category/subCategories
+// //access PUBLIC
+// exports.getAllSubCategories = catchAsync(async (req, res, next) => {
+//   let categories = await Category.find({ isSubCategory: true });
+//   res.status(200).json({
+//     status: 'success',
+//     categories,
+//   });
+// });
 
 //@desc Get all categories
 //@route POST /api/v1/category/
 //access PUBLIC
 exports.getAllCategories = catchAsync(async (req, res, next) => {
-  let categories = await Category.find({ isSubCategory: false });
+  let categories = await Category.find({});
   res.status(200).json({
     status: 'success',
     categories,

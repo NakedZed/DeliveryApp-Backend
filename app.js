@@ -5,6 +5,7 @@ const userRouter = require('./routes/userRouter');
 const shopRouter = require('./routes/shopRouter');
 const categoryRouter = require('./routes/categoryRouter');
 const productRouter = require('./routes/productRouter');
+const subCategoriesRouter = require('./routes/subCategoryRouter');
 const AppError = require('./utils/appError');
 
 const app = express();
@@ -23,6 +24,7 @@ app.use('/api/v1/users', userRouter); //Request will hit this first and then mat
 app.use('/api/v1/shops', shopRouter); //Request will hit this first and then match with one of shopRouters.
 app.use('/api/v1/categories', categoryRouter); //Request will hit this first and then match with one of categoryRouters.
 app.use('/api/v1/products', productRouter); //Request will hit this first and then match with one of productRouters.
+app.use('/api/v1/subCategories', subCategoriesRouter); //Request will hit this first and then match with one of subCategoriesRouter.
 
 //If there is no matching route this middleware will be FIRED!
 app.all('*', (req, res, next) => {

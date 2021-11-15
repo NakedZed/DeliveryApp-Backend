@@ -4,17 +4,9 @@ const jwt = require('jsonwebtoken');
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('../utils/appError');
 const { format } = require('util');
-const { Storage } = require('@google-cloud/storage');
 const ErrorMsgs = require('../utils/ErrorMsgsConstants');
+const { bucket } = require('../utils/firebaseConfiguration');
 
-///////
-const storage = new Storage({
-  projectId: 'delivery-app-5e621',
-  keyFilename: 'delivery-app-5e621-firebase-adminsdk-kjin7-465d741a9b.json',
-});
-
-const bucket = storage.bucket('gs://delivery-app-5e621.appspot.com');
-///////
 signToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,

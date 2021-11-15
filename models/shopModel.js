@@ -28,13 +28,6 @@ const shopSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Category',
   },
-  //Refers to the sub-categories that will be contained in the shop itself.
-  subCategories: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Category',
-    },
-  ],
 });
 
 // shopSchema.plugin(uniqueValidator);
