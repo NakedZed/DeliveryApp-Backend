@@ -114,6 +114,7 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
   ) {
     return next(new AppError(ErrorMsgs.COMPARE_PASSWORD, 400));
   }
+  console.log(foundUser);
   //3)If so, update the password
   foundUser.password = req.body.password;
   foundUser.passwordConfirm = req.body.passwordConfirm;

@@ -2,11 +2,20 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 dotenv.config({ path: './config.env' });
 const app = require('./app');
+
 const DB = process.env.DATABASE.replace(
   '<PASSWORD>',
   process.env.DATABASE_PASSWORD
 );
 //Connecting to our hosted DB
+
+//For any global exception in the application EX: logging undefined variable
+process.on('uncaughtException', (err) => {
+  console.log(err.name, err.message);
+  console.log('Unhandled Exception!.. shutting down');
+
+  process.exit(1);
+});
 
 if (process.env.NODE_ENV === 'development') {
   mongoose
@@ -26,7 +35,6 @@ if (process.env.NODE_ENV === 'development') {
   mongoose
     .connect(DB, {
       useNewUrlParser: true,
-
       autoIndex: true, //this is the code I added that solved it all
       keepAlive: true,
       connectTimeoutMS: 10000,

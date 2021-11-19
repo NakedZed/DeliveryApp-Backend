@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
-var uniqueValidator = require('mongoose-unique-validator');
 
 const userSchema = new mongoose.Schema({
   username: {
@@ -35,8 +34,6 @@ const userSchema = new mongoose.Schema({
   },
 });
 
-//This plugin is used to make sure that the unique attirbute in database schema is unique and no duplication
-userSchema.plugin(uniqueValidator);
 userSchema.pre('save', async function (next) {
   //Only run this function if password was modified
   if (!this.isModified('password')) return next(); //if the signle document isnt changed
