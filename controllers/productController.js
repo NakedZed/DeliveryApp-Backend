@@ -8,8 +8,8 @@ const Product = require('../models/productModel');
 //@route POST /api/v1/products/:shopId/:subCategoryId ==> SubCategory represent any category inside the shop itself
 //access PUBLIC
 exports.createProduct = catchAsync(async (req, res, next) => {
-  req.body.shop = req.params.shopId;
-  req.body.subCategory = req.params.subCategoryId;
+  req.body.shop = req.query.shopId;
+  req.body.subCategory = req.query.subCategoryId;
   let product = await Product.create(req.body);
   res.status(200).json({
     status: 'success',
@@ -21,7 +21,7 @@ exports.createProduct = catchAsync(async (req, res, next) => {
 //@route GET /api/v1/products/:id
 //access PUBLIC
 exports.getProductById = catchAsync(async (req, res, next) => {
-  let product = await Product.findById(req.params.id)
+  let product = await Product.findById(req.query.id)
     .populate('shop')
     .populate('subCategory')
     .exec();

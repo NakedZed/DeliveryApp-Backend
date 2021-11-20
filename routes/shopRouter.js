@@ -7,10 +7,20 @@ const {
   getShopById,
   getShopsByCategory,
 } = require('../controllers/shopController');
+const {
+  checkForIdExistenceAndValidityShop,
+  checkForIdExistenceAndValidityCategory,
+} = require('../utils/checkForId');
 
-router.get('/shopsForCategory', getShopsByCategory); //Get all shops by a category ID
+router.get(
+  '/shopsForCategory',
+  checkForIdExistenceAndValidityCategory,
+  getShopsByCategory
+); //Get all shops by a category ID
 router.route('/').get(getAllShops);
-router.route('/:shopId').get(getShopById);
-router.route('/:categoryId').post(protect, createShop).get(getShopsByCategory); //add a shop and specify a category for it
+router
+  .route('/shop')
+  .get(checkForIdExistenceAndValidityShop, getShopById)
+  .post(protect, checkForIdExistenceAndValidityCategory, createShop); //add a shop and specify a category for it or getting a specific shop
 
 module.exports = router;

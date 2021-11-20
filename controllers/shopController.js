@@ -5,15 +5,15 @@ const catchAsync = require('../utils/catchAsync');
 const ErrorMsgs = require('./../utils/ErrorMsgsConstants');
 
 //@desc Create a shop(Represents any resturant etc...)
-//@route POST /api/v1/shops/:categoryId
+//@route POST /api/v1/shops/shop => pass category id in the query
 //access PRIVATE -> You have to be logged in.
 
 exports.createShop = catchAsync(async (req, res, next) => {
   //Take id from the currently logged in user.
 
   req.body.owner = req.user.id;
-  //Getting the categoryId from the params in the route and setting it to be in the body of the request.
-  req.body.category = req.params.categoryId;
+  //Getting the categoryId from the query  and setting it to be in the body of the request.
+  req.body.category = req.query.categoryId;
 
   let shop = await Shop.create(req.body);
   res.status(200).json({
@@ -32,13 +32,13 @@ exports.getAllShops = catchAsync(async (req, res, next) => {
   });
 });
 //@desc get a specific shop
-//@route GET /api/v1/shops/:shopId
+//@route GET /api/v1/shops/shop => pass shop id in query
 //access PUBLIC
 exports.getShopById = catchAsync(async (req, res, next) => {
-  if (req.params.shopId.length !== 24) {
+  if (req.query.shopId.length !== 24) {
     return next(new AppError(ErrorMsgs.INVALID_SHOPID, 400));
   }
-  let shop = await Shop.findById(req.params.shopId)
+  let shop = await Shop.findById(req.query.shopId)
     .populate('owner')
     .populate('category')
     .exec();
