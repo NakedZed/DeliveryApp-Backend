@@ -1,6 +1,4 @@
-const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
-const ErrorMsgs = require('./../utils/ErrorMsgsConstants');
 const Category = require('../models/categoryModel');
 const {
   handleStoringImageAndCreatingElement,
@@ -14,12 +12,26 @@ exports.createCategory = catchAsync(async (req, res, next) => {
 });
 
 //@desc Get all categories
-//@route POST /api/v1/category/l
+//@route POST /api/v1/category/
 //access PUBLIC
 exports.getAllCategories = catchAsync(async (req, res, next) => {
   let categories = await Category.find({});
   res.status(200).json({
     status: 'success',
     categories,
+  });
+});
+
+//@desc Delete a category by id
+//@route DELETE /api/v1/categories/category
+//access PUBLIC
+exports.deleteCategoryById = catchAsync(async (req, res, next) => {
+  let { categoryId } = req.query;
+
+  let deletedCategory = await Category.findOneAndDelete({ _id: categoryId });
+
+  res.status(200).json({
+    status: 'success',
+    deletedCategory,
   });
 });

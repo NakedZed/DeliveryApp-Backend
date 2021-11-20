@@ -58,7 +58,7 @@ exports.updateProductById = catchAsync(async (req, res, next) => {
 //access PUBLIC
 exports.deleteProductById = catchAsync(async (req, res, next) => {
   let { productId } = req.query;
-  let deletedProduct = await Product.findOneAndDelete(productId);
+  let deletedProduct = await Product.findOneAndDelete({ _id: productId });
   res.status(200).json({
     status: 'success',
     deletedProduct,

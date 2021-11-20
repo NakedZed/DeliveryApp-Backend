@@ -60,3 +60,15 @@ exports.getShopsByCategory = catchAsync(async (req, res, next) => {
     shops,
   });
 });
+//@desc Delete a shop by id
+//@route DELETE /api/v1/products/shop
+//access PUBLIC
+exports.deleteShopById = catchAsync(async (req, res, next) => {
+  let { shopId } = req.query;
+
+  let deletedShop = await Shop.findOneAndDelete({ _id: shopId });
+  res.status(200).json({
+    status: 'success',
+    deletedShop,
+  });
+});

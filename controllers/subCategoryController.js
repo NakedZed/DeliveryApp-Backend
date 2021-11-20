@@ -46,3 +46,19 @@ exports.getSubCategoriesForShop = catchAsync(async (req, res, next) => {
     subCategories,
   });
 });
+
+//@desc Delete a subCategory by id
+//@route DELETE /api/v1/subCategories/subCategory
+//access PUBLIC
+exports.deleteSubCategoryById = catchAsync(async (req, res, next) => {
+  let { subCategoryId } = req.query;
+
+  let deletedSubCategory = await SubCategory.findOneAndDelete({
+    _id: subCategoryId,
+  });
+
+  res.status(200).json({
+    status: 'success',
+    deletedSubCategory,
+  });
+});

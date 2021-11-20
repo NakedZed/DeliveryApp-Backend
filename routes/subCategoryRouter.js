@@ -4,9 +4,21 @@ const {
   createSubCategory,
   getAllSubCategories,
   getSubCategoriesForShop,
+  deleteSubCategoryById,
 } = require('../controllers/subCategoryController');
+const {
+  checkForIdExistenceAndValiditySubCategory,
+  checkForIdExistenceAndValidityShop,
+} = require('../utils/checkForId');
 
-router.route('/').post(createSubCategory).get(getAllSubCategories);
-router.route('/shopSubCategories').get(getSubCategoriesForShop);
+router
+  .route('/subCategory')
+  .post(checkForIdExistenceAndValidityShop, createSubCategory)
+  .delete(checkForIdExistenceAndValiditySubCategory, deleteSubCategoryById);
+
+router.route('/').get(getAllSubCategories);
+router
+  .route('/shopSubCategories')
+  .get(checkForIdExistenceAndValidityShop, getSubCategoriesForShop);
 
 module.exports = router;
