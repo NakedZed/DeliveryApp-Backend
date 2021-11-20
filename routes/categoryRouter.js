@@ -9,12 +9,19 @@ const {
   createCategory,
   getAllCategories,
   deleteCategoryById,
+  updateCategoryById,
 } = require('../controllers/categoryController');
 
 router
   .route('/category')
   .post(uploadPhoto, resizePhoto, createCategory)
-  .delete(checkForIdExistenceAndValidityCategory, deleteCategoryById);
+  .delete(checkForIdExistenceAndValidityCategory, deleteCategoryById)
+  .patch(
+    uploadPhoto,
+    resizePhoto,
+    checkForIdExistenceAndValidityCategory,
+    updateCategoryById
+  );
 router.route('/').get(getAllCategories);
 
 module.exports = router;

@@ -2,6 +2,7 @@ const catchAsync = require('../utils/catchAsync');
 const Category = require('../models/categoryModel');
 const {
   handleStoringImageAndCreatingElement,
+  handleUpdatingAndStoringElement,
 } = require('../utils/firebaseStorage');
 
 //@desc Create a category(Represents if the Shop in the food category or anything else etc...)
@@ -34,4 +35,10 @@ exports.deleteCategoryById = catchAsync(async (req, res, next) => {
     status: 'success',
     deletedCategory,
   });
+});
+
+exports.updateCategoryById = catchAsync(async (req, res, next) => {
+  let { categoryId } = req.query;
+
+  handleUpdatingAndStoringElement('categories', req, res, categoryId);
 });
