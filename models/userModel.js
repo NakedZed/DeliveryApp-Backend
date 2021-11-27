@@ -32,6 +32,12 @@ const userSchema = new mongoose.Schema({
   userType: {
     type: String,
   },
+  isFirstTime: {
+    type: Boolean,
+  },
+  score: {
+    type: Number,
+  },
 });
 
 userSchema.pre('save', async function (next) {
@@ -41,7 +47,6 @@ userSchema.pre('save', async function (next) {
   this.password = await bcrypt.hash(this.password, 12);
   //Delete the password confirm field
   this.passwordConfirm = undefined;
-
   next();
 });
 /*Function takes the password that the user passes it in the body(not hased)

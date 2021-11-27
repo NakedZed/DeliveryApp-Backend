@@ -28,6 +28,13 @@ const shopSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Category',
   },
+  from: {
+    type: Date,
+  },
+  to: {
+    type: Date,
+  },
+  photo: { type: String },
 });
 
 // shopSchema.plugin(uniqueValidator);

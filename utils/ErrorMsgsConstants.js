@@ -27,6 +27,9 @@ let ErrorMsgs = {
   //Products
   NO_PRODUCT_ID: 'من فضلك ادخل منتج',
   INVALID_PRODUCT_ID: 'من قضلك ادخل المنتج صحيحا',
+  ///////////////////
+  NO_OFFER_ID: 'من فضلك ادخل العرض',
+  INVALID_OFFER_ID: 'من فضلك ادخل العرض صحيحا',
 };
 
 module.exports = ErrorMsgs;

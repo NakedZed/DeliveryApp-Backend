@@ -1,6 +1,7 @@
 const { format } = require('util');
 const catchAsync = require('./catchAsync');
 const Category = require('../models/categoryModel');
+const Offer = require('../models/offerModel');
 const { bucket } = require('./firebaseConfiguration');
 
 exports.handleStoringImageAndCreatingElement = catchAsync(
@@ -9,6 +10,9 @@ exports.handleStoringImageAndCreatingElement = catchAsync(
     switch (schemaType) {
       case 'categories':
         Model = Category;
+        break;
+      case 'offers':
+        Model = Offer;
         break;
     }
     const blob = bucket.file(`${schemaType}/${req.file.originalname}`);
@@ -37,8 +41,16 @@ exports.handleUpdatingAndStoringElement = catchAsync(
       case 'categories':
         Model = Category;
         break;
+      case 'offers':
+        Model = Offer;
+        break;
     }
-    let id = Model === Category ? req.query.categoryId : (id = id);
+    let id =
+      Model === Category
+        ? req.query.categoryId
+        : Model === Offer
+        ? req.query.offerId
+        : (id = id);
     if (req.file) {
       const blob = bucket.file(`${schemaType}/${req.file.originalname}`);
       const blobStream = blob.createWriteStream();

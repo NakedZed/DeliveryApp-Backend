@@ -37,6 +37,9 @@ exports.deleteCategoryById = catchAsync(async (req, res, next) => {
   });
 });
 
+//@desc Update a category by id
+//@route Update /api/v1/categories/category
+//access PUBLIC
 exports.updateCategoryById = catchAsync(async (req, res, next) => {
   let { categoryId } = req.query;
 

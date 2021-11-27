@@ -35,3 +35,11 @@ exports.checkForIdExistenceAndValiditySubCategory = (req, res, next) => {
   }
   next();
 };
+exports.checkForIdExistenceAndValidityOffer = (req, res, next) => {
+  if (!req.query.offerId) {
+    return next(new AppError(ErrorMsgs.NO_OFFER_ID, 400));
+  } else if (req.query.offerId.length !== 24) {
+    return next(new AppError(ErrorMsgs.INVALID_OFFER_ID, 400));
+  }
+  next();
+};

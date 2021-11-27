@@ -25,7 +25,7 @@ exports.createShop = catchAsync(async (req, res, next) => {
 //@route GET /api/v1/shops/
 //access PUBLIC
 exports.getAllShops = catchAsync(async (req, res, next) => {
-  let shops = await Shop.find({});
+  let shops = await Shop.find({}, { owner: 0 });
   res.status(200).json({
     status: 'success',
     shops,
