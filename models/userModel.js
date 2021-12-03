@@ -38,6 +38,11 @@ const userSchema = new mongoose.Schema({
   score: {
     type: Number,
   },
+  service: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Service',
+    default: null,
+  },
 });
 
 userSchema.pre('save', async function (next) {

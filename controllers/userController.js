@@ -4,6 +4,7 @@ const { format } = require('util');
 const catchAsync = require('../utils/catchAsync');
 const ErrorMsgs = require('./../utils/ErrorMsgsConstants');
 const { bucket } = require('../utils/firebaseConfiguration');
+var mongoose = require('mongoose');
 
 //@desc Get All Users
 //@route Get /api/v1/users
@@ -108,4 +109,18 @@ exports.updateUserById = catchAsync(async (req, res, next) => {
       updatedUser,
     });
   }
+});
+
+//@desc Get Users By service
+//@route Get /api/v1/users/service
+//access PUBLIC
+exports.getUsersByService = catchAsync(async (req, res, next) => {
+  let { serviceId } = req.query;
+  let users = await User.find({
+    service: mongoose.Types.ObjectId(serviceId),
+  });
+  res.status(200).json({
+    status: 'success',
+    users,
+  });
 });

@@ -43,3 +43,11 @@ exports.checkForIdExistenceAndValidityOffer = (req, res, next) => {
   }
   next();
 };
+exports.checkForIdExistenceAndValidityService = (req, res, next) => {
+  if (!req.query.serviceId) {
+    return next(new AppError(ErrorMsgs.NO_SERVICE_ID, 400));
+  } else if (req.query.serviceId.length !== 24) {
+    return next(new AppError(ErrorMsgs.INVALID_SERVICE_ID, 400));
+  }
+  next();
+};

@@ -53,7 +53,9 @@ exports.signup = catchAsync(async (req, res, next) => {
   if (!userType) {
     return next(new AppError(ErrorMsgs.NO_USERTYPE, 400));
   }
-
+  if (req.query.serviceId) {
+    req.body.service = req.query.serviceId;
+  }
   if (req.file) {
     const blob = bucket.file(`users/${req.file.originalname}`);
     const blobStream = blob.createWriteStream();
