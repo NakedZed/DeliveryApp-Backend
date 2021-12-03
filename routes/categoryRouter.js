@@ -10,6 +10,7 @@ const {
   getAllCategories,
   deleteCategoryById,
   updateCategoryById,
+  getCategoryById,
 } = require('../controllers/categoryController');
 
 router
@@ -21,7 +22,8 @@ router
     resizePhoto,
     checkForIdExistenceAndValidityCategory,
     updateCategoryById
-  );
+  )
+  .get(checkForIdExistenceAndValidityCategory, getCategoryById);
 router.route('/').get(getAllCategories);
 
 module.exports = router;

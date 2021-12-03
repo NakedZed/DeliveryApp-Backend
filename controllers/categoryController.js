@@ -1,5 +1,7 @@
 const catchAsync = require('../utils/catchAsync');
 const Category = require('../models/categoryModel');
+var mongoose = require('mongoose');
+
 const {
   handleStoringImageAndCreatingElement,
   handleUpdatingAndStoringElement,
@@ -44,4 +46,19 @@ exports.updateCategoryById = catchAsync(async (req, res, next) => {
   let { categoryId } = req.query;
 
   handleUpdatingAndStoringElement('categories', req, res, categoryId);
+});
+
+//@desc Get a category by id
+//@route Get /api/v1/categories/category
+//access PUBLIC
+
+exports.getCategoryById = catchAsync(async (req, res, next) => {
+  let { categoryId } = req.query;
+  let category = await Category.findById({
+    _id: categoryId,
+  });
+  res.status(200).json({
+    status: 'success',
+    category,
+  });
 });
