@@ -3,7 +3,14 @@ const catchAsync = require('./catchAsync');
 const Category = require('../models/categoryModel');
 const Offer = require('../models/offerModel');
 const Product = require('../models/productModel');
-const { bucket } = require('./firebaseConfiguration');
+// const { bucket } = require('./firebaseConfiguration');
+const { Storage } = require('@google-cloud/storage');
+
+const storage = new Storage({
+  projectId: 'delivery-app-5e621',
+  keyFilename: 'delivery-app-5e621-firebase-adminsdk-kjin7-465d741a9b.json',
+});
+let bucket = storage.bucket('gs://delivery-app-5e621.appspot.com');
 
 exports.handleStoringImageAndCreatingElement = catchAsync(
   async (schemaType, req, res) => {
