@@ -45,3 +45,14 @@ exports.updateOfferById = catchAsync(async (req, res, next) => {
   let { offerId } = req.query;
   handleUpdatingAndStoringElement('offers', req, res, offerId);
 });
+
+//@desc Get all offers
+//@route GET /api/v1/offers/
+//access PUBLIC
+exports.getAllOffers = catchAsync(async (req, res, next) => {
+  let offers = await Offer.find();
+  res.status(200).json({
+    status: 'success',
+    offers,
+  });
+});

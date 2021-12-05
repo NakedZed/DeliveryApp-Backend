@@ -51,3 +51,11 @@ exports.checkForIdExistenceAndValidityService = (req, res, next) => {
   }
   next();
 };
+exports.checkForIdExistenceAndValidityUser = (req, res, next) => {
+  if (!req.query.userId) {
+    return next(new AppError(ErrorMsgs.NO_USER_ID, 400));
+  } else if (req.query.userId.length !== 24) {
+    return next(new AppError(ErrorMsgs.INVALID_USER_ID, 400));
+  }
+  next();
+};

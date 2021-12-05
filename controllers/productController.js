@@ -3,6 +3,10 @@ const { format } = require('util');
 const catchAsync = require('../utils/catchAsync');
 const ErrorMsgs = require('./../utils/ErrorMsgsConstants');
 const Product = require('../models/productModel');
+const {
+  handleStoringImageAndCreatingElement,
+  handleUpdatingAndStoringElement,
+} = require('../utils/firebaseStorage');
 
 //@desc Create a product(EX: sandwich aw ay 7aga tanya momkn tb2a mawgoda f shop)
 //@route POST /api/v1/products/:shopId/:subCategoryId ==> SubCategory represent any category inside the shop itself
@@ -10,11 +14,7 @@ const Product = require('../models/productModel');
 exports.createProduct = catchAsync(async (req, res, next) => {
   req.body.shop = req.query.shopId;
   req.body.subCategory = req.query.subCategoryId;
-  let product = await Product.create(req.body);
-  res.status(200).json({
-    status: 'success',
-    product,
-  });
+  handleStoringImageAndCreatingElement('products', req, res);
 });
 
 //@desc Get a product by id
@@ -36,21 +36,8 @@ exports.getProductById = catchAsync(async (req, res, next) => {
 //@route UPDATE /api/v1/products/product
 //access PUBLIC
 exports.updateProductById = catchAsync(async (req, res, next) => {
-  let updatedProduct = await Product.findOneAndUpdate(
-    { _id: req.query.productId },
-    req.body,
-    {
-      new: true,
-      runValidators: true,
-    }
-  )
-    .populate('subCategory')
-    .populate('shop');
-
-  res.status(200).json({
-    status: 'success',
-    updatedProduct,
-  });
+  let { productId } = req.query;
+  handleUpdatingAndStoringElement('products', req, res, productId);
 });
 
 //@desc Delete a product by id

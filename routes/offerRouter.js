@@ -6,6 +6,7 @@ const {
   createOffer,
   deleteOfferById,
   getOffersForShop,
+  getAllOffers,
   updateOfferById,
 } = require('../controllers/offerController');
 
@@ -24,6 +25,8 @@ router
   )
   .delete(checkForIdExistenceAndValidityOffer, deleteOfferById)
   .patch(checkForIdExistenceAndValidityOffer, updateOfferById);
+
+router.route('/').get(getAllOffers);
 
 router
   .route('/shopOffers')

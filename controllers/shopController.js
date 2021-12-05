@@ -1,5 +1,10 @@
 const AppError = require('../utils/appError');
 const Shop = require('../models/shopModel');
+const Product = require('../models/productModel');
+const Favorite = require('../models/favoriteModel');
+const subCategory = require('../models/subCategoryModel');
+const Offer = require('../models/offerModel');
+
 const { format } = require('util');
 const catchAsync = require('../utils/catchAsync');
 const ErrorMsgs = require('./../utils/ErrorMsgsConstants');
@@ -38,6 +43,17 @@ exports.getShopById = catchAsync(async (req, res, next) => {
   if (req.query.shopId.length !== 24) {
     return next(new AppError(ErrorMsgs.INVALID_SHOPID, 400));
   }
+
+  let isFavorite = null;
+  if (req.query.userId) {
+    let favoriteShopsForUser = await Favorite.find({
+      user: req.query.userId,
+    });
+    //Checking in favoriteShops array in favorite schema if the shop included for the favorite shops for the user
+    isFavorite = favoriteShopsForUser[0].favoriteShops.includes(
+      req.query.shopId
+    );
+  }
   let shop = await Shop.findById(req.query.shopId)
     .populate('owner')
     .populate('category')
@@ -45,6 +61,7 @@ exports.getShopById = catchAsync(async (req, res, next) => {
   res.status(200).json({
     status: 'success',
     shop,
+    isFavorite,
   });
 });
 //@desc get a shops by specific categoryID
@@ -67,6 +84,18 @@ exports.deleteShopById = catchAsync(async (req, res, next) => {
   let { shopId } = req.query;
 
   let deletedShop = await Shop.findOneAndDelete({ _id: shopId });
+  // //When deleting a shop we delete all the products related to this product
+  // await Product.deleteMany({ shop: shopId });
+  // //When deleting a shop we delete all the subCategories assosiated with this shop
+  // await subCategory.deleteMany({ shop: shopId });
+  // //When deleting a shop we delete all offers assosiated with this shop
+  // await Offer.deleteMany({ shop: shopId });
+  Promise.all([
+    Product.deleteMany({ shop: shopId }),
+    subCategory.deleteMany({ shop: shopId }),
+    Offer.deleteMany({ shop: shopId }),
+  ]);
+
   res.status(200).json({
     status: 'success',
     deletedShop,

@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('../utils/appError');
 const { format } = require('util');
+const Favorite = require('../models/favoriteModel');
 const ErrorMsgs = require('../utils/ErrorMsgsConstants');
 const { bucket } = require('../utils/firebaseConfiguration');
 
@@ -69,10 +70,17 @@ exports.signup = catchAsync(async (req, res, next) => {
     let wholeBody = { ...req.body, photo: photoUrl };
     let newUser = await User.create(wholeBody);
     createSendToken(newUser, 201, res);
+    await Favorite.create({
+      user: newUser._id,
+    });
     blobStream.end(req.file.buffer);
   } else {
     let newUser = await User.create(req.body);
     createSendToken(newUser, 201, res);
+    //We are intializting favorites for user by creating empty collection for favorites
+    await Favorite.create({
+      user: newUser._id,
+    });
   }
 });
 exports.loginWithPhone = catchAsync(async (req, res, next) => {

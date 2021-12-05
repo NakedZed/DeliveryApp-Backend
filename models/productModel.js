@@ -14,6 +14,7 @@ const productSchema = new mongoose.Schema({
   price: {
     type: Number,
   },
+  photo: { type: String },
 });
 const Product = new mongoose.model('Product', productSchema);
 module.exports = Product;
