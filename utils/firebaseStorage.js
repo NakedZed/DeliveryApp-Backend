@@ -3,6 +3,7 @@ const catchAsync = require('./catchAsync');
 const Category = require('../models/categoryModel');
 const Offer = require('../models/offerModel');
 const Shop = require('../models/shopModel');
+const Service = require('../models/serviceModel');
 const Product = require('../models/productModel');
 const { bucket } = require('./firebaseConfiguration');
 // const { Storage } = require('@google-cloud/storage');
@@ -25,8 +26,13 @@ exports.handleStoringImageAndCreatingElement = catchAsync(
         break;
       case 'products':
         Model = Product;
+        break;
       case 'shops':
         Model = Shop;
+        break;
+      case 'services':
+        Model = Service;
+        break;
     }
 
     if (!req.file) {
@@ -68,8 +74,13 @@ exports.handleUpdatingAndStoringElement = catchAsync(
         break;
       case 'products':
         Model = Product;
+        break;
       case 'shops':
         Model = Shop;
+        break;
+      case 'services':
+        Model = Service;
+        break;
     }
     let id =
       Model === Category
@@ -80,6 +91,8 @@ exports.handleUpdatingAndStoringElement = catchAsync(
         ? req.query.productId
         : Model === Shop
         ? req.query.shopId
+        : Model === Service
+        ? req.query.serviceId
         : (id = id);
     if (req.file) {
       const blob = bucket.file(`${schemaType}/${req.file.originalname}`);

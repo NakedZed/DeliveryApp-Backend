@@ -1,16 +1,16 @@
 const catchAsync = require('../utils/catchAsync');
 const Service = require('../models/serviceModel');
 var mongoose = require('mongoose');
+const {
+  handleStoringImageAndCreatingElement,
+  handleUpdatingAndStoringElement,
+} = require('../utils/firebaseStorage');
 
 //@desc Create service
 //@route POST /api/v1/services/service
 //access PUBLIC
 exports.createService = catchAsync(async (req, res, next) => {
-  let service = await Service.create(req.body);
-  res.status(200).json({
-    status: 'success',
-    service,
-  });
+  handleStoringImageAndCreatingElement('services', req, res);
 });
 
 //@desc Get all services
@@ -41,18 +41,8 @@ exports.deleteServiceById = catchAsync(async (req, res, next) => {
 //@route Update /api/v1/services/service ==>We pass service ID in query
 //access PUBLIC
 exports.updateServiceById = catchAsync(async (req, res, next) => {
-  let updatedService = await Service.findOneAndUpdate(
-    { _id: req.query.serviceId },
-    req.body,
-    {
-      new: true,
-      runValidators: true,
-    }
-  );
-  res.status(200).json({
-    status: 'success',
-    updatedService,
-  });
+  let { serviceId } = req.query;
+  handleUpdatingAndStoringElement('services', req, res, serviceId);
 });
 
 //@desc Get a service by Id
