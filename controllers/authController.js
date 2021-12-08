@@ -6,14 +6,14 @@ const AppError = require('../utils/appError');
 const { format } = require('util');
 const Favorite = require('../models/favoriteModel');
 const ErrorMsgs = require('../utils/ErrorMsgsConstants');
-// const { bucket } = require('../utils/firebaseConfiguration');
-const { Storage } = require('@google-cloud/storage');
+const { bucket } = require('../utils/firebaseConfiguration');
+// const { Storage } = require('@google-cloud/storage');
 
-const storage = new Storage({
-  projectId: 'delivery-app-5e621',
-  keyFilename: 'delivery-app-5e621-firebase-adminsdk-kjin7-465d741a9b.json',
-});
-let bucket = storage.bucket('gs://delivery-app-5e621.appspot.com');
+// const storage = new Storage({
+//   projectId: 'delivery-app-5e621',
+//   keyFilename: 'delivery-app-5e621-firebase-adminsdk-kjin7-465d741a9b.json',
+// });
+// let bucket = storage.bucket('gs://delivery-app-5e621.appspot.com');
 
 signToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {

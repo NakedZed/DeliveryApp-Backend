@@ -6,6 +6,7 @@ const {
   getAllShops,
   getShopById,
   getShopsByCategory,
+  updateShopById,
   deleteShopById,
 } = require('../controllers/shopController');
 const {
@@ -23,6 +24,7 @@ router
   .route('/shop')
   .get(checkForIdExistenceAndValidityShop, getShopById)
   .post(protect, checkForIdExistenceAndValidityCategory, createShop) //add a shop and specify a category for it or getting a specific shop
-  .delete(checkForIdExistenceAndValidityShop, deleteShopById);
+  .delete(checkForIdExistenceAndValidityShop, deleteShopById)
+  .patch(checkForIdExistenceAndValidityShop, updateShopById);
 
 module.exports = router;

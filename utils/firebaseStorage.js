@@ -2,15 +2,16 @@ const { format } = require('util');
 const catchAsync = require('./catchAsync');
 const Category = require('../models/categoryModel');
 const Offer = require('../models/offerModel');
+const Shop = require('../models/shopModel');
 const Product = require('../models/productModel');
-// const { bucket } = require('./firebaseConfiguration');
-const { Storage } = require('@google-cloud/storage');
+const { bucket } = require('./firebaseConfiguration');
+// const { Storage } = require('@google-cloud/storage');
 
-const storage = new Storage({
-  projectId: 'delivery-app-5e621',
-  keyFilename: 'delivery-app-5e621-firebase-adminsdk-kjin7-465d741a9b.json',
-});
-let bucket = storage.bucket('gs://delivery-app-5e621.appspot.com');
+// const storage = new Storage({
+//   projectId: 'delivery-app-5e621',
+//   keyFilename: 'delivery-app-5e621-firebase-adminsdk-kjin7-465d741a9b.json',
+// });
+// let bucket = storage.bucket('gs://delivery-app-5e621.appspot.com');
 
 exports.handleStoringImageAndCreatingElement = catchAsync(
   async (schemaType, req, res) => {
@@ -24,6 +25,8 @@ exports.handleStoringImageAndCreatingElement = catchAsync(
         break;
       case 'products':
         Model = Product;
+      case 'shops':
+        Model = Shop;
     }
 
     if (!req.file) {
@@ -65,6 +68,8 @@ exports.handleUpdatingAndStoringElement = catchAsync(
         break;
       case 'products':
         Model = Product;
+      case 'shops':
+        Model = Shop;
     }
     let id =
       Model === Category
@@ -73,6 +78,8 @@ exports.handleUpdatingAndStoringElement = catchAsync(
         ? req.query.offerId
         : Model === Product
         ? req.query.productId
+        : Model === Shop
+        ? req.query.shopId
         : (id = id);
     if (req.file) {
       const blob = bucket.file(`${schemaType}/${req.file.originalname}`);

@@ -8,6 +8,10 @@ const Offer = require('../models/offerModel');
 const { format } = require('util');
 const catchAsync = require('../utils/catchAsync');
 const ErrorMsgs = require('./../utils/ErrorMsgsConstants');
+const {
+  handleStoringImageAndCreatingElement,
+  handleUpdatingAndStoringElement,
+} = require('../utils/firebaseStorage');
 
 //@desc Create a shop(Represents any resturant etc...)
 //@route POST /api/v1/shops/shop => pass category id in the query
@@ -15,16 +19,10 @@ const ErrorMsgs = require('./../utils/ErrorMsgsConstants');
 
 exports.createShop = catchAsync(async (req, res, next) => {
   //Take id from the currently logged in user.
-
   req.body.owner = req.user.id;
   //Getting the categoryId from the query  and setting it to be in the body of the request.
   req.body.category = req.query.categoryId;
-
-  let shop = await Shop.create(req.body);
-  res.status(200).json({
-    status: 'success',
-    shop,
-  });
+  handleStoringImageAndCreatingElement('shops', req, res);
 });
 //@desc get all shops in the system
 //@route GET /api/v1/shops/
@@ -100,4 +98,8 @@ exports.deleteShopById = catchAsync(async (req, res, next) => {
     status: 'success',
     deletedShop,
   });
+});
+exports.updateShopById = catchAsync(async (req, res, next) => {
+  let { shopId } = req.query;
+  handleUpdatingAndStoringElement('shops', req, res, shopId);
 });
