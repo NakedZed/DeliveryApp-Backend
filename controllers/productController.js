@@ -21,11 +21,7 @@ exports.createProduct = catchAsync(async (req, res, next) => {
 //@route GET /api/v1/products/:id
 //access PUBLIC
 exports.getProductById = catchAsync(async (req, res, next) => {
-  let product = await Product.findById(req.query.id)
-    .populate('shop')
-    .populate('subCategory')
-    .exec();
-
+  let product = await Product.findById(req.query.productId);
   res.status(200).json({
     status: 'success',
     product,

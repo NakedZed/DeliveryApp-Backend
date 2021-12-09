@@ -36,6 +36,7 @@ exports.handleStoringImageAndCreatingElement = catchAsync(
     }
 
     if (!req.file) {
+      console.log(req.body);
       let createdElement = await Model.create(req.body);
       res.status(200).json({
         status: 'success',
@@ -94,7 +95,16 @@ exports.handleUpdatingAndStoringElement = catchAsync(
         : Model === Service
         ? req.query.serviceId
         : (id = id);
-    if (req.file) {
+    if (!req.file) {
+      let updatedElement = await Model.findOneAndUpdate({ _id: id }, req.body, {
+        new: true,
+        runValidators: true,
+      });
+      res.status(200).json({
+        status: 'success',
+        updatedElement,
+      });
+    } else {
       const blob = bucket.file(`${schemaType}/${req.file.originalname}`);
       const blobStream = blob.createWriteStream();
       blobStream.on('finish', async () => {
@@ -119,15 +129,6 @@ exports.handleUpdatingAndStoringElement = catchAsync(
         updatedElement,
       });
       blobStream.end(req.file.buffer);
-    } else {
-      let updatedElement = await Model.findOneAndUpdate({ _id: id }, req.body, {
-        new: true,
-        runValidators: true,
-      });
-      res.status(200).json({
-        status: 'success',
-        updatedElement,
-      });
     }
   }
 );
