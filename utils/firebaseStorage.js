@@ -36,13 +36,13 @@ exports.handleStoringImageAndCreatingElement = catchAsync(
     }
 
     if (!req.file) {
-      console.log(req.body);
       let createdElement = await Model.create(req.body);
       res.status(200).json({
         status: 'success',
         createdElement,
       });
     } else {
+      console.log('hello');
       const blob = bucket.file(`${schemaType}/${req.file.originalname}`);
       const blobStream = blob.createWriteStream();
       blobStream.on('finish', async () => {
