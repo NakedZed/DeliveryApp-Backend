@@ -7,6 +7,7 @@ const {
   handleStoringImageAndCreatingElement,
   handleUpdatingAndStoringElement,
 } = require('../utils/firebaseStorage');
+const { bucket } = require('../utils/firebaseConfiguration');
 
 //@desc Create a product(EX: sandwich aw ay 7aga tanya momkn tb2a mawgoda f shop)
 //@route POST /api/v1/products/:shopId/:subCategoryId ==> SubCategory represent any category inside the shop itself
@@ -33,7 +34,47 @@ exports.getProductById = catchAsync(async (req, res, next) => {
 //access PUBLIC
 exports.updateProductById = catchAsync(async (req, res, next) => {
   let { productId } = req.query;
-  handleUpdatingAndStoringElement('products', req, res, productId);
+  // handleUpdatingAndStoringElement('products', req, res, productId);
+  if (!req.file) {
+    console.log(req.body);
+    let updatedElement = await Product.findOneAndUpdate(
+      { _id: productId },
+      req.body,
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+    res.status(200).json({
+      status: 'success',
+      updatedElement,
+    });
+  } else {
+    const blob = bucket.file(`${schemaType}/${req.file.originalname}`);
+    const blobStream = blob.createWriteStream();
+    blobStream.on('finish', async () => {
+      // The public URL can be used to directly access the file via HTTP.
+      publicUrl = format(
+        `https://storage.googleapis.com/${bucket.name}/${blob.name}`
+      );
+    });
+    let photoUrl = `https://storage.googleapis.com/${bucket.name}/${schemaType}/${req.file.originalname}`;
+    let wholeBody = { ...req.body, photo: photoUrl };
+
+    let updatedElement = await Product.findOneAndUpdate(
+      { _id: productId },
+      wholeBody,
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+    res.status(200).json({
+      status: 'success',
+      updatedElement,
+    });
+    blobStream.end(req.file.buffer);
+  }
 });
 
 //@desc Delete a product by id
