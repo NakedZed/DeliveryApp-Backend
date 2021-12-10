@@ -3,6 +3,7 @@ const router = express.Router(); //We created sub application for products
 const {
   checkForIdExistenceAndValidityService,
 } = require('../utils/checkForId');
+const { uploadPhoto, resizePhoto } = require('../utils/multerConfiguration');
 const {
   createService,
   deleteServiceById,
@@ -14,9 +15,14 @@ const {
 router.route('/').get(getAllServices);
 router
   .route('/service')
-  .post(createService)
+  .post(uploadPhoto, resizePhoto, createService)
   .get(checkForIdExistenceAndValidityService, getServiceById)
   .delete(checkForIdExistenceAndValidityService, deleteServiceById)
-  .patch(checkForIdExistenceAndValidityService, updateServiceById);
+  .patch(
+    checkForIdExistenceAndValidityService,
+    uploadPhoto,
+    resizePhoto,
+    updateServiceById
+  );
 
 module.exports = router;

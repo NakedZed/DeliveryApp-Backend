@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router(); //We created sub application for shops
 const { protect } = require('./../controllers/authController');
+const { uploadPhoto, resizePhoto } = require('../utils/multerConfiguration');
+
 const {
   createShop,
   getAllShops,
@@ -23,8 +25,19 @@ router.route('/').get(getAllShops);
 router
   .route('/shop')
   .get(checkForIdExistenceAndValidityShop, getShopById)
-  .post(protect, checkForIdExistenceAndValidityCategory, createShop) //add a shop and specify a category for it or getting a specific shop
+  .post(
+    protect,
+    checkForIdExistenceAndValidityCategory,
+    uploadPhoto,
+    resizePhoto,
+    createShop
+  ) //add a shop and specify a category for it or getting a specific shop
   .delete(checkForIdExistenceAndValidityShop, deleteShopById)
-  .patch(checkForIdExistenceAndValidityShop, updateShopById);
+  .patch(
+    checkForIdExistenceAndValidityShop,
+    uploadPhoto,
+    resizePhoto,
+    updateShopById
+  );
 
 module.exports = router;

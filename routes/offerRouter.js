@@ -24,7 +24,12 @@ router
     createOffer
   )
   .delete(checkForIdExistenceAndValidityOffer, deleteOfferById)
-  .patch(checkForIdExistenceAndValidityOffer, updateOfferById);
+  .patch(
+    checkForIdExistenceAndValidityOffer,
+    uploadPhoto,
+    resizePhoto,
+    updateOfferById
+  );
 
 router.route('/').get(getAllOffers);
 
