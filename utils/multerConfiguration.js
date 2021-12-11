@@ -18,7 +18,6 @@ exports.uploadPhoto = upload.single('photo');
 
 exports.resizePhoto = catchAsync(async (req, res, next) => {
   if (!req.file) return next();
-  console.log('reqfile>>>>>>>>>>>', req.file);
   const extension = req.file.mimetype.split('/')[1];
   req.file.filename = `user-${Date.now()}.${extension}`; //Added it to the req to be able to use it in the next middlewares Ex:(signup handle)
   next();

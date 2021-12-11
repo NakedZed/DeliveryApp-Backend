@@ -31,6 +31,9 @@ router.get(
 );
 
 router.route('/').get(getAllUsers);
-router.route('/user').get(getUserById).patch(updateUserById);
+router
+  .route('/user')
+  .get(getUserById)
+  .patch(uploadPhoto, resizePhoto, updateUserById);
 
 module.exports = router;
