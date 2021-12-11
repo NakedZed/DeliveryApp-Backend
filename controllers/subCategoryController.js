@@ -52,8 +52,9 @@ exports.getSubCategoriesForShop = catchAsync(async (req, res, next) => {
 //access PUBLIC
 exports.updateSubCategoryById = catchAsync(async (req, res, next) => {
   let { subCategoryId } = req.query;
+  console.log(subCategoryId);
   let updatedSubCategory = await SubCategory.findOneAndUpdate(
-    { id: subCategoryId },
+    { _id: subCategoryId },
     req.body,
     {
       new: true,
