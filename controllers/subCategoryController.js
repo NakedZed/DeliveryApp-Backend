@@ -25,7 +25,7 @@ exports.createSubCategory = catchAsync(async (req, res, next) => {
 //@route GET /api/v1/subcategories/
 //access PUBLIC
 exports.getAllSubCategories = catchAsync(async (req, res, next) => {
-  let subCategories = await SubCategory.find().populate('shop');
+  let subCategories = await SubCategory.find();
   res.status(200).json({
     status: 'success',
     subCategories,
