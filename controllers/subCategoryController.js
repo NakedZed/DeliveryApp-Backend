@@ -47,7 +47,26 @@ exports.getSubCategoriesForShop = catchAsync(async (req, res, next) => {
   });
 });
 
-//@desc Delete a subCategory by id
+//@desc Update a subCategory by id
+//@route UPDATE /api/v1/subCategories/subCategory
+//access PUBLIC
+exports.updateSubCategoryById = catchAsync(async (req, res, next) => {
+  let { subCategoryId } = req.query;
+  let updatedSubCategory = await SubCategory.findOneAndUpdate(
+    { id: subCategoryId },
+    req.body,
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
+  res.status(200).json({
+    status: 'success',
+    updatedSubCategory,
+  });
+});
+
+//@desc Delete  a subCategory by id
 //@route DELETE /api/v1/subCategories/subCategory
 //access PUBLIC
 exports.deleteSubCategoryById = catchAsync(async (req, res, next) => {

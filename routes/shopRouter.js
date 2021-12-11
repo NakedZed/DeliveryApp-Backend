@@ -14,6 +14,7 @@ const {
 const {
   checkForIdExistenceAndValidityShop,
   checkForIdExistenceAndValidityCategory,
+  checkForIdExistenceAndValidityUser,
 } = require('../utils/checkForId');
 
 router.get(
@@ -28,6 +29,7 @@ router
   .post(
     protect,
     checkForIdExistenceAndValidityCategory,
+    checkForIdExistenceAndValidityUser,
     uploadPhoto,
     resizePhoto,
     createShop

@@ -5,6 +5,7 @@ const {
   getAllSubCategories,
   getSubCategoriesForShop,
   deleteSubCategoryById,
+  updateSubCategoryById,
 } = require('../controllers/subCategoryController');
 const {
   checkForIdExistenceAndValiditySubCategory,
@@ -14,7 +15,8 @@ const {
 router
   .route('/subCategory')
   .post(checkForIdExistenceAndValidityShop, createSubCategory)
-  .delete(checkForIdExistenceAndValiditySubCategory, deleteSubCategoryById);
+  .delete(checkForIdExistenceAndValiditySubCategory, deleteSubCategoryById)
+  .patch(checkForIdExistenceAndValiditySubCategory, updateSubCategoryById);
 
 router.route('/').get(getAllSubCategories);
 router

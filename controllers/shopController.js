@@ -19,7 +19,7 @@ const {
 
 exports.createShop = catchAsync(async (req, res, next) => {
   //Take id from the currently logged in user.
-  req.body.owner = req.user.id;
+  req.body.owner = req.query.userId;
   //Getting the categoryId from the query  and setting it to be in the body of the request.
   req.body.category = req.query.categoryId;
   handleStoringImageAndCreatingElement('shops', req, res);
