@@ -76,7 +76,7 @@ exports.getShopsByCategory = catchAsync(async (req, res, next) => {
   });
 });
 //@desc Delete a shop by id
-//@route DELETE /api/v1/products/shop
+//@route DELETE /api/v1/shops/shop
 //access PUBLIC
 exports.deleteShopById = catchAsync(async (req, res, next) => {
   let { shopId } = req.query;
@@ -99,7 +99,22 @@ exports.deleteShopById = catchAsync(async (req, res, next) => {
     deletedShop,
   });
 });
+//@desc Update a shop by id
+//@route UPDATE /api/v1/shops/shop
+//access PUBLIC
 exports.updateShopById = catchAsync(async (req, res, next) => {
   let { shopId } = req.query;
   handleUpdatingAndStoringElement('shops', req, res, shopId);
+});
+
+//@desc Get all shops for specific owner by providing ==> userId
+//@route GT /api/v1/shops/shopsForOwner
+//access PUBLIC
+exports.getShopsOwner = catchAsync(async (req, res, next) => {
+  let { userId } = req.query;
+  let shopsOwner = await Shop.find({ owner: userId });
+  res.status(200).json({
+    status: 'success',
+    shopsOwner,
+  });
 });

@@ -10,6 +10,7 @@ const {
   getShopsByCategory,
   updateShopById,
   deleteShopById,
+  getShopsOwner,
 } = require('../controllers/shopController');
 const {
   checkForIdExistenceAndValidityShop,
@@ -41,5 +42,9 @@ router
     resizePhoto,
     updateShopById
   );
+
+router
+  .route('/shopsForOwner')
+  .get(checkForIdExistenceAndValidityUser, getShopsOwner);
 
 module.exports = router;

@@ -15,6 +15,7 @@ let {
   getUserByType,
   updateUserById,
   getUsersByService,
+  updateNotificationToken,
 } = require('./../controllers/userController');
 
 let { checkForIdExistenceAndValidityService } = require('../utils/checkForId');
@@ -29,6 +30,9 @@ router.get(
   checkForIdExistenceAndValidityService,
   getUsersByService
 );
+
+// Endpoint for updating the token
+router.patch('/notificationToken', updateNotificationToken);
 
 router.route('/').get(getAllUsers);
 router

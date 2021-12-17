@@ -43,6 +43,10 @@ const userSchema = new mongoose.Schema({
     ref: 'Service',
     default: null,
   },
+  notificationToken: {
+    type: String,
+    default: null,
+  },
 });
 
 userSchema.pre('save', async function (next) {

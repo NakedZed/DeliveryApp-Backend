@@ -124,3 +124,34 @@ exports.getUsersByService = catchAsync(async (req, res, next) => {
     users,
   });
 });
+
+//@desc Update notificationToken ==> update token to a value provided in query or clear it if there is no value passed
+//@route PATCH /api/v1/users/notificationToken
+//access PUBLIC
+exports.updateNotificationToken = catchAsync(async (req, res, next) => {
+  const notificationToken = req.query.notificationToken;
+  let foundUser;
+  if (notificationToken) {
+    foundUser = await User.findByIdAndUpdate(
+      req.user.id,
+      { notificationToken },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+  } else {
+    foundUser = await User.findByIdAndUpdate(
+      req.user.id,
+      { notificationToken: null },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+  }
+  res.status(200).json({
+    status: 'success',
+    foundUser,
+  });
+});

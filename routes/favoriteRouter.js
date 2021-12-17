@@ -2,15 +2,33 @@ const express = require('express');
 const router = express.Router(); //We created sub application for products
 const { protect } = require('./../controllers/authController');
 
-const { checkForIdExistenceAndValidityUser } = require('../utils/checkForId');
+const {
+  checkForIdExistenceAndValidityUser,
+  checkForIdExistenceAndValidityShop,
+} = require('../utils/checkForId');
 const {
   getFavoriteShopsForUser,
-  modifyFavoriteShops,
+  addShopForFavorites,
+  removeShopFromFavorites,
 } = require('../controllers/favoriteController');
 
 router
   .route('/favorite')
-  .get(checkForIdExistenceAndValidityUser, getFavoriteShopsForUser)
-  .patch(modifyFavoriteShops);
+  .get(checkForIdExistenceAndValidityUser, getFavoriteShopsForUser);
+
+router
+  .route('/addFavorite')
+  .patch(
+    checkForIdExistenceAndValidityUser,
+    checkForIdExistenceAndValidityShop,
+    addShopForFavorites
+  );
+router
+  .route('/removeFavorite')
+  .patch(
+    checkForIdExistenceAndValidityUser,
+    checkForIdExistenceAndValidityShop,
+    removeShopFromFavorites
+  );
 
 module.exports = router;
