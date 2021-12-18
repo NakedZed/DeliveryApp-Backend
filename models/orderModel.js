@@ -6,12 +6,13 @@ const orderSchema = new mongoose.Schema({
   },
   orderItems: [
     {
-      qty: { type: Number, required: true },
-      price: { type: Number, required: true },
-      product: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Product',
-      },
+      products: [
+        {
+          product: { type: mongoose.Schema.Types.ObjectId, ref: 'Product' },
+          qty: { type: Number },
+          price: { type: Number },
+        },
+      ],
       shopId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Shop',
