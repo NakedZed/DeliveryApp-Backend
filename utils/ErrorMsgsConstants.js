@@ -34,6 +34,9 @@ let ErrorMsgs = {
   //////////////////
   NO_SERVICE_ID: 'من فضلك ادخل الخدمة',
   INVALID_SERVICE_ID: 'من فضلك ادخل الخدمة صحيحا',
+  ////////////////////////
+  NO_ORDER_ID: 'من فضلك ادخل رقم الطلب',
+  INVALID_ORDER_ID: 'من فضلك ادخل رقم الطلب صحيحا',
 };
 
 module.exports = ErrorMsgs;

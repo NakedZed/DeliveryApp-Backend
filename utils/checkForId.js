@@ -59,3 +59,11 @@ exports.checkForIdExistenceAndValidityUser = (req, res, next) => {
   }
   next();
 };
+exports.checkForIdExistenceAndValidityOrder = (req, res, next) => {
+  if (!req.query.orderId) {
+    return next(new AppError(ErrorMsgs.NO_ORDER_ID, 400));
+  } else if (req.query.orderId.length !== 24) {
+    return next(new AppError(ErrorMsgs.INVALID_ORDER_ID, 400));
+  }
+  next();
+};
