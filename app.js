@@ -10,6 +10,7 @@ const subCategoriesRouter = require('./routes/subCategoryRouter');
 const serviceRouter = require('./routes/serviceRouter');
 const favoriteRouter = require('./routes/favoriteRouter');
 const orderRouter = require('./routes/orderRouter');
+const cartRouter = require('./routes/cartRouter');
 const AppError = require('./utils/appError');
 
 const app = express();
@@ -33,6 +34,7 @@ app.use('/api/v1/offers', offerRouter); //Request will hit this first and then m
 app.use('/api/v1/services', serviceRouter); //Request will hit this first and then match with one of serviceRouter
 app.use('/api/v1/favorites', favoriteRouter); //Request will hit this first and then match with one of favorites router
 app.use('/api/v1/orders', orderRouter); //Request will hit this first and then match with one of orders router
+app.use('/api/v1/carts', cartRouter); //Request will hit this first and then match with one of carts router
 
 //If there is no matching route this middleware will be FIRED!
 app.all('*', (req, res, next) => {

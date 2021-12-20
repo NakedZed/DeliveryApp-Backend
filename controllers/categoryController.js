@@ -1,6 +1,5 @@
 const catchAsync = require('../utils/catchAsync');
 const Category = require('../models/categoryModel');
-var mongoose = require('mongoose');
 
 const {
   handleStoringImageAndCreatingElement,

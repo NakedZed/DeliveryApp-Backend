@@ -13,7 +13,7 @@ const {
   getOrdersForDelivery,
   deleteOrders,
   getAllOrders,
-  //   getAllOrdersForSpecificShop,
+  getAllOrdersForSpecificShop,
 } = require('../controllers/orderController');
 
 router
@@ -25,7 +25,7 @@ router
 
 router.route('/').delete(deleteOrders).get(getAllOrders);
 router.route('/userOrders').get(protect, getOrdersForUser);
-// router.route('/shopOrders').get(getAllOrdersForSpecificShop);
+router.route('/shopOrders').get(getAllOrdersForSpecificShop);
 
 router
   .route('/ordersForDelivery')

@@ -1,6 +1,8 @@
 const catchAsync = require('../utils/catchAsync');
 const Order = require('../models/orderModel');
+// const Cart = require('../models/cartModel');
 const AppError = require('./../utils/appError');
+const { ObjectId } = require('mongodb');
 
 //@desc Create Order
 //@route POST /api/orders/order
@@ -8,12 +10,18 @@ const AppError = require('./../utils/appError');
 exports.createOrder = catchAsync(async (req, res, next) => {
   //Delivery in body refers to the delivery boy who will deliver the order.
   const { orderItems, delivery } = req.body;
-  let wholeBody = { ...req.body, user: req.user._id, delivery: delivery };
+  // let carts = await Cart.find({ user: req.user._id }).select('-user');
+
+  let wholeBody = {
+    ...req.body,
+    user: req.user._id,
+    delivery: delivery,
+    // orderItems: carts,
+  };
   if (orderItems && orderItems.length === 0) {
     return next(new AppError(' عفوا لا يوجد منتجات ', 400));
   } else {
     let order = await Order.create(wholeBody);
-
     res.status(200).json({
       status: 'success',
       order,
@@ -89,18 +97,17 @@ exports.getAllOrders = catchAsync(async (req, res, next) => {
   });
 });
 
-// exports.getAllOrdersForSpecificShop = catchAsync(async (req, res, next) => {
-//   let { shopId } = req.query;
-//   let orders = await Order.find({
-//     shopId: {
-//       $in: '61bc9789c86910a13e533c55',
-//     },
-//   });
-//   //   let filteredOrderItems = orders.map((order) => order.orderItems);
-//   res.status(200).json({
-//     status: 'success',
-//     count: orders.length,
-//     orders,
-//   });
-//   console.log(orders);
-// });
+exports.getAllOrdersForSpecificShop = catchAsync(async (req, res, next) => {
+  let { shopId } = req.query;
+  let orders = await Order.find().populate('orderItems');
+  let ordersForSpecificShop = orders
+    .map((order) => order.orderItems)
+    .filter((orderItem, i) => {
+      return orderItem[i].shop !== new ObjectId(shopId);
+    });
+
+  res.status(200).json({
+    status: 'success',
+    ordersForSpecificShop,
+  });
+});

@@ -2,21 +2,21 @@ const catchAsync = require('../utils/catchAsync');
 const Favorite = require('../models/favoriteModel');
 const { ObjectId } = require('mongodb');
 
-//@desc add favorite shops for user
-//@route POST /api/v1/shops/shop => pass shopIds array in the body and the userId in the query
-//access PUBLIC
-// exports.addShopForUserInFavorites = catchAsync(async (req, res, next) => {
-//   req.body.user = req.query.userId;
+// @desc add favorite shops for user
+// @route POST /api/v1/shops/shop => pass shopIds array in the body and the userId in the query
+// access PUBLIC
+exports.addShopForUserInFavorites = catchAsync(async (req, res, next) => {
+  req.body.user = req.query.userId;
 
-//   //Req.body.shopIds === shops needed to be favorite
-//   req.body.favoriteShops = [...req.body.shopIds];
+  //Req.body.shopIds === shops needed to be favorite
+  req.body.favoriteShops = [...req.body.shopIds];
 
-//   let favorite = await Favorite.create(req.body);
-//   res.status(200).json({
-//     status: 'success',
-//     favorite,
-//   });
-// });
+  let favorite = await Favorite.create(req.body);
+  res.status(200).json({
+    status: 'success',
+    favorite,
+  });
+});
 
 //@desc Get favorite shops for user ==> By providing userid in query
 //@route GET /api/v1/favorites/favorite
