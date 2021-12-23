@@ -21,19 +21,17 @@ const orderSchema = new mongoose.Schema({
         type: String,
         default: 'Not delivered',
       },
+      delivery: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        default: null,
+      },
+      user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+      },
     },
   ],
-  // orderItems: [
-  //   {
-  //     type: mongoose.Schema.Types.ObjectId,
-  //     ref: 'Cart',
-  //   },
-  // ],
-  delivery: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    default: null,
-  },
   totalPrice: {
     type: Number,
     default: 0.0,

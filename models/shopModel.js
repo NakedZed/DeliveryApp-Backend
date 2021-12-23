@@ -35,6 +35,9 @@ const shopSchema = new mongoose.Schema({
     type: Date,
   },
   photo: { type: String },
+  opensAt: {
+    type: String,
+  },
 });
 
 // shopSchema.plugin(uniqueValidator);

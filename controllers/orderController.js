@@ -9,13 +9,13 @@ const { ObjectId } = require('mongodb');
 //@access Private //User must be logged in
 exports.createOrder = catchAsync(async (req, res, next) => {
   //Delivery in body refers to the delivery boy who will deliver the order.
-  const { orderItems, delivery } = req.body;
+  const { orderItems } = req.body;
   // let carts = await Cart.find({ user: req.user._id }).select('-user');
 
   let wholeBody = {
     ...req.body,
-    user: req.user._id,
-    delivery: delivery,
+    // user: req.user._id,
+    // delivery: delivery,
     // orderItems: carts,
   };
   if (orderItems && orderItems.length === 0) {
@@ -99,15 +99,27 @@ exports.getAllOrders = catchAsync(async (req, res, next) => {
 
 exports.getAllOrdersForSpecificShop = catchAsync(async (req, res, next) => {
   let { shopId } = req.query;
-  let orders = await Order.find().populate('orderItems');
-  let ordersForSpecificShop = orders
-    .map((order) => order.orderItems)
-    .filter((orderItem, i) => {
-      return orderItem[i].shop !== new ObjectId(shopId);
-    });
+  let orders = await Order.find();
+  // let orderItems = orders;
+  let orderItemsClone = [];
+
+  // .map((order) => {
+  //   return order.orderItems;
+  // })
+  // .flat()
+  // .filter((orderItem) => {
+  //   return String(orderItem.shopId) === String(shopId);
+  // });
+
+  orders.forEach(({ orderItems }) => (orderItemsClone = [...orderItems]));
+  console.log(orderItemsClone);
+  let ordersItems = orderItemsClone.filter((item) => {
+    return String(item.shopId) == String(shopId);
+  });
 
   res.status(200).json({
     status: 'success',
-    ordersForSpecificShop,
+    ordersItems,
   });
 });
+//TODO:GEt orders for delivery and users(2 endpoint)
