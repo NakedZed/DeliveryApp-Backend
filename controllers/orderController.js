@@ -2,7 +2,7 @@ const catchAsync = require('../utils/catchAsync');
 const Order = require('../models/orderModel');
 // const Cart = require('../models/cartModel');
 const AppError = require('./../utils/appError');
-const { ObjectId } = require('mongodb');
+// const { ObjectId } = require('mongodb');
 
 //@desc Create Order
 //@route POST /api/orders/order
@@ -14,8 +14,7 @@ exports.createOrder = catchAsync(async (req, res, next) => {
 
   let wholeBody = {
     ...req.body,
-    // user: req.user._id,
-    // delivery: delivery,
+    user: req.user._id,
     // orderItems: carts,
   };
   if (orderItems && orderItems.length === 0) {
@@ -97,22 +96,21 @@ exports.getAllOrders = catchAsync(async (req, res, next) => {
   });
 });
 
+//@desc Get all Orders for specific shop ==> id for the shop is passed
+//@route GET /api/orders/shopOrders
+//@access Private
 exports.getAllOrdersForSpecificShop = catchAsync(async (req, res, next) => {
   let { shopId } = req.query;
   let orders = await Order.find();
-  // let orderItems = orders;
   let orderItemsClone = [];
 
-  // .map((order) => {
-  //   return order.orderItems;
-  // })
-  // .flat()
-  // .filter((orderItem) => {
-  //   return String(orderItem.shopId) === String(shopId);
-  // });
+  orders.forEach(
+    ({ orderItems, delivery, user }) =>
+      (orderItemsClone = orderItems.map((orderItem) =>
+        Object.assign(orderItem, { delivery }, { user })
+      ))
+  );
 
-  orders.forEach(({ orderItems }) => (orderItemsClone = [...orderItems]));
-  console.log(orderItemsClone);
   let ordersItems = orderItemsClone.filter((item) => {
     return String(item.shopId) == String(shopId);
   });
@@ -122,4 +120,22 @@ exports.getAllOrdersForSpecificShop = catchAsync(async (req, res, next) => {
     ordersItems,
   });
 });
-//TODO:GEt orders for delivery and users(2 endpoint)
+
+//@desc Update all Orders for specific shop ==> id for the shop is passed
+//@route PATCH /api/orders/order
+//@access Public
+exports.updateDeliveryForOrderItems = catchAsync(async (req, res, next) => {
+  let { orderId } = req.query; // Represents delivery ID
+  let updatedOrder = await Order.findOneAndUpdate(
+    { orderId },
+    { delivery: req.body.userId },
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
+  res.status(200).json({
+    status: 'success',
+    updatedOrder,
+  });
+});

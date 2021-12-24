@@ -14,12 +14,14 @@ const {
   deleteOrders,
   getAllOrders,
   getAllOrdersForSpecificShop,
+  updateDeliveryForOrderItems,
 } = require('../controllers/orderController');
 
 router
   .route('/order')
   .post(protect, createOrder)
-  .get(checkForIdExistenceAndValidityOrder, getOrderById);
+  .get(checkForIdExistenceAndValidityOrder, getOrderById)
+  .patch(checkForIdExistenceAndValidityUser, updateDeliveryForOrderItems);
 
 //Route to delete many orders passed in the body as an array
 
