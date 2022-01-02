@@ -7,6 +7,8 @@ const {
   updatePassword,
   protect,
   loginWithPhone,
+  forgetPassword,
+  verifyAndReset,
 } = require('./../controllers/authController');
 
 let {
@@ -16,6 +18,7 @@ let {
   updateUserById,
   getUsersByService,
   updateNotificationToken,
+  notifyDeliveryAndShops,
 } = require('./../controllers/userController');
 
 let { checkForIdExistenceAndValidityService } = require('../utils/checkForId');
@@ -32,12 +35,15 @@ router.get(
 );
 
 // Endpoint for updating the token
-router.patch('/notificationToken', updateNotificationToken);
+router.patch('/notificationToken', protect, updateNotificationToken);
 
 router.route('/').get(getAllUsers);
 router
   .route('/user')
   .get(getUserById)
   .patch(uploadPhoto, resizePhoto, updateUserById);
+router.route('/forgetPassword').post(forgetPassword);
+router.route('/verifyAndReset').post(verifyAndReset);
+router.route('/notifyDeliveryAndShops').post(notifyDeliveryAndShops);
 
 module.exports = router;

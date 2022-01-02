@@ -1,9 +1,15 @@
 const AppError = require('../utils/appError');
 const User = require('./../models/userModel');
+const Shop = require('./../models/shopModel');
 const { format } = require('util');
 const catchAsync = require('../utils/catchAsync');
 const ErrorMsgs = require('./../utils/ErrorMsgsConstants');
 const { bucket } = require('../utils/firebaseConfiguration');
+const admin = require('firebase-admin');
+const {
+  sendNotification,
+  sendMultipleNotification,
+} = require('../utils/sendNotification');
 var mongoose = require('mongoose');
 
 //@desc Get All Users
@@ -39,7 +45,7 @@ exports.getUserById = catchAsync(async (req, res, next) => {
 //access PUBLIC
 exports.getUserByType = catchAsync(async (req, res, next) => {
   let { userType } = req.query;
-  let userTypeArray = ['User', 'Vendor', 'Star'];
+  let userTypeArray = ['user', 'vendor', 'delivery'];
 
   if (!userType) {
     return next(new AppError(ErrorMsgs.NO_USERTYPE, 400));
@@ -154,4 +160,69 @@ exports.updateNotificationToken = catchAsync(async (req, res, next) => {
     status: 'success',
     foundUser,
   });
+});
+
+//@desc Notify the shops provided in the order and all the delivery boys
+//@route PATCH /api/v1/users/notifyDeliveryAndShops
+//access PUBLIC
+exports.notifyDeliveryAndShops = catchAsync(async (req, res, next) => {
+  //TODO:Get the notification token from the id of the shop wants to be notified and assign it to the registeration token
+
+  //We are hanlding if we want to nofiy only one shop or Multiple shops
+  if (req.body.shopIds.length > 1) {
+    //Here we returning actual shops docs
+    let shopsToBeNotified = await Shop.find().where('_id').in(req.body.shopIds);
+
+    //We are mapping to get the shop owners ids
+    let shopOwnersIds = shopsToBeNotified.map((shop) => shop.owner);
+
+    //Finding the actual owner docs(In user collection)
+    let shopOwnersDocs = await User.find().where('_id').in(shopOwnersIds);
+
+    const shopOwnerRegistrationTokens = shopOwnersDocs
+      .map((owner) => owner.notificationToken)
+      .filter((token) => token);
+
+    const message = {
+      data: {
+        userType: 'vendor',
+        type: 'order',
+      },
+      topic: 'shops',
+    };
+    sendMultipleNotification(shopOwnerRegistrationTokens, message, 'shops');
+  } else {
+    let shopId = req.body.shopIds[0];
+
+    let shopToBeNotified = await Shop.findOne({ _id: shopId });
+
+    let shopOwnerId = shopToBeNotified.owner;
+
+    let shopOwnerDoc = await User.findOne({ _id: shopOwnerId });
+
+    let shopOwnerRegistrationToken = shopOwnerDoc.notificationToken;
+    var payload = {
+      data: {
+        type: 'order',
+        userType: 'vendor',
+      },
+    };
+    sendNotification(shopOwnerRegistrationToken, payload);
+  }
+
+  //TODO: Filter in find for all the delivery boys to notify them.
+  const users = await User.find({ userType: 'delivery' });
+  const userRegistrationTokens = users
+    .map((user) => user.notificationToken)
+    .filter((token) => token);
+  // Will be sent to all the delivery in the system
+  const message = {
+    data: {
+      userType: 'delivery',
+      type: 'order',
+    },
+    topic: 'users',
+  };
+
+  sendMultipleNotification(userRegistrationTokens, message, 'users');
 });

@@ -11,6 +11,7 @@ const {
   updateShopById,
   deleteShopById,
   getShopsOwner,
+  updateNotificationToken,
 } = require('../controllers/shopController');
 const {
   checkForIdExistenceAndValidityShop,
@@ -42,7 +43,12 @@ router
     resizePhoto,
     updateShopById
   );
-
+// Endpoint for updating the token
+router.patch(
+  '/notificationToken',
+  checkForIdExistenceAndValidityShop,
+  updateNotificationToken
+);
 router
   .route('/shopsForOwner')
   .get(checkForIdExistenceAndValidityUser, getShopsOwner);

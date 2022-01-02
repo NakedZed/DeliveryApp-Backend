@@ -118,3 +118,33 @@ exports.getShopsOwner = catchAsync(async (req, res, next) => {
     shopsOwner,
   });
 });
+//@desc Update notificationToken ==> update token to a value provided in query or clear it if there is no value passed
+//@route PATCH /api/v1/shops/notificationToken
+//access PUBLIC
+exports.updateNotificationToken = catchAsync(async (req, res, next) => {
+  const notificationToken = req.query.notificationToken;
+  let foundShop;
+  if (notificationToken) {
+    foundShop = await Shop.findByIdAndUpdate(
+      req.query.shopId,
+      { notificationToken },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+  } else {
+    foundShop = await Shop.findByIdAndUpdate(
+      req.query.shopId,
+      { notificationToken: null },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+  }
+  res.status(200).json({
+    status: 'success',
+    foundShop,
+  });
+});

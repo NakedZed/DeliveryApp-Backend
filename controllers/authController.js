@@ -7,6 +7,10 @@ const { format } = require('util');
 const Favorite = require('../models/favoriteModel');
 const ErrorMsgs = require('../utils/ErrorMsgsConstants');
 const { bucket } = require('../utils/firebaseConfiguration');
+const dotenv = require('dotenv');
+dotenv.config({ path: './config.env' });
+const client = require('twilio')(process.env.accountSID, process.env.authToken);
+
 // const { Storage } = require('@google-cloud/storage');
 
 // const storage = new Storage({
@@ -179,4 +183,44 @@ exports.protect = catchAsync(async (req, res, next) => {
   //Grants access to the proteced route
   req.user = currentUser;
   next();
+});
+//TODO:Add ServiceID, AccountSID and authToken in heroku config vars
+exports.forgetPassword = catchAsync(async (req, res, next) => {
+  let data = await client.verify
+    .services(process.env.serviceId)
+    .verifications.create({
+      to: `+201007959398`,
+      channel: 'sms',
+    });
+
+  res.status(200).json({
+    data,
+    status: 'success',
+  });
+});
+
+exports.verifyAndReset = catchAsync(async (req, res, next) => {
+  let response = await client.verify
+    .services(process.env.serviceId)
+    .verificationChecks.create({
+      to: `+201007959398`,
+      code: '954233',
+    });
+
+  if (response.status === 'approved') {
+    let user = await User.findOne({ phone: req.query.phone });
+    console.log(user);
+    user.password = req.body.password;
+    user.passwordConfirm = req.body.passwordConfirm;
+    await user.save();
+    //3)Log the user in, send JWT
+    const token = signToken(user._id);
+    res.status(200).json({
+      status: 'success',
+      token,
+      user,
+    });
+  } else {
+    console.log('failed');
+  }
 });

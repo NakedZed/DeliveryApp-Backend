@@ -38,6 +38,10 @@ const shopSchema = new mongoose.Schema({
   opensAt: {
     type: String,
   },
+  notificationToken: {
+    type: String,
+    default: null,
+  },
 });
 
 // shopSchema.plugin(uniqueValidator);
