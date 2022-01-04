@@ -166,7 +166,7 @@ exports.updateNotificationToken = catchAsync(async (req, res, next) => {
 //@route PATCH /api/v1/users/notifyDeliveryAndShops
 //access PUBLIC
 exports.notifyDeliveryAndShops = catchAsync(async (req, res, next) => {
-  //TODO:Get the notification token from the id of the shop wants to be notified and assign it to the registeration token
+  //Get the notification token from the id of the shop wants to be notified and assign it to the registeration token
 
   //We are hanlding if we want to nofiy only one shop or Multiple shops
   if (req.body.shopIds.length > 1) {
@@ -190,7 +190,12 @@ exports.notifyDeliveryAndShops = catchAsync(async (req, res, next) => {
       },
       topic: 'shops',
     };
-    sendMultipleNotification(shopOwnerRegistrationTokens, message, 'shops');
+    sendMultipleNotification(
+      shopOwnerRegistrationTokens,
+      message,
+      'shops',
+      res
+    );
   } else {
     let shopId = req.body.shopIds[0];
 
@@ -201,16 +206,19 @@ exports.notifyDeliveryAndShops = catchAsync(async (req, res, next) => {
     let shopOwnerDoc = await User.findOne({ _id: shopOwnerId });
 
     let shopOwnerRegistrationToken = shopOwnerDoc.notificationToken;
+
+    console.log(shopOwnerRegistrationToken);
     var payload = {
       data: {
         type: 'order',
         userType: 'vendor',
+        shopId: String(shopToBeNotified._id),
       },
     };
-    sendNotification(shopOwnerRegistrationToken, payload);
+    sendNotification(shopOwnerRegistrationToken, payload, res);
   }
 
-  //TODO: Filter in find for all the delivery boys to notify them.
+  //Filter in find for all the delivery boys to notify them.
   const users = await User.find({ userType: 'delivery' });
   const userRegistrationTokens = users
     .map((user) => user.notificationToken)
@@ -223,6 +231,8 @@ exports.notifyDeliveryAndShops = catchAsync(async (req, res, next) => {
     },
     topic: 'users',
   };
-
-  sendMultipleNotification(userRegistrationTokens, message, 'users');
+  sendMultipleNotification(userRegistrationTokens, message, 'users', res);
+  res.json({
+    success: 'success',
+  });
 });
