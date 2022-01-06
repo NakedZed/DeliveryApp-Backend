@@ -21,7 +21,10 @@ let {
   notifyDeliveryAndShops,
 } = require('./../controllers/userController');
 
-let { checkForIdExistenceAndValidityService } = require('../utils/checkForId');
+let {
+  checkForIdExistenceAndValidityService,
+  checkForIdExistenceAndValidityUser,
+} = require('../utils/checkForId');
 
 //Passing uploaduserphoto and resizeuserphoto middlewares before signing up
 router.post('/signup', uploadPhoto, resizePhoto, signup);
@@ -41,7 +44,12 @@ router.route('/').get(getAllUsers);
 router
   .route('/user')
   .get(getUserById)
-  .patch(uploadPhoto, resizePhoto, updateUserById);
+  .patch(
+    checkForIdExistenceAndValidityUser,
+    uploadPhoto,
+    resizePhoto,
+    updateUserById
+  );
 router.route('/forgetPassword').post(forgetPassword);
 router.route('/verifyAndReset').post(verifyAndReset);
 router.route('/notifyDeliveryAndShops').post(notifyDeliveryAndShops);

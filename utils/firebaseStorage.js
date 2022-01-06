@@ -5,6 +5,7 @@ const Offer = require('../models/offerModel');
 const Shop = require('../models/shopModel');
 const Service = require('../models/serviceModel');
 const Product = require('../models/productModel');
+const User = require('../models/userModel');
 // const { bucket } = require('./firebaseConfiguration');
 const { Storage } = require('@google-cloud/storage');
 
@@ -82,6 +83,8 @@ exports.handleUpdatingAndStoringElement = catchAsync(
       case 'services':
         Model = Service;
         break;
+      case 'users':
+        Model = User;
     }
     let id =
       Model === Category
@@ -94,6 +97,8 @@ exports.handleUpdatingAndStoringElement = catchAsync(
         ? req.query.shopId
         : Model === Service
         ? req.query.serviceId
+        : Model === User
+        ? req.query.userId
         : (id = id);
     if (!req.file) {
       let updatedElement = await Model.findOneAndUpdate({ _id: id }, req.body, {

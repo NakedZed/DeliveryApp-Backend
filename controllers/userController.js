@@ -7,6 +7,11 @@ const ErrorMsgs = require('./../utils/ErrorMsgsConstants');
 const { bucket } = require('../utils/firebaseConfiguration');
 const admin = require('firebase-admin');
 const {
+  handleStoringImageAndCreatingElement,
+  handleUpdatingAndStoringElement,
+} = require('../utils/firebaseStorage');
+
+const {
   sendNotification,
   sendMultipleNotification,
 } = require('../utils/sendNotification');
@@ -67,54 +72,55 @@ exports.getUserByType = catchAsync(async (req, res, next) => {
 //access PUBLIC
 exports.updateUserById = catchAsync(async (req, res, next) => {
   let { userId } = req.query;
-  if (req.file) {
-    const blob = bucket.file(`users/${req.file.originalname}`);
-    const blobStream = blob.createWriteStream();
-    blobStream.on('finish', async () => {
-      // The public URL can be used to directly access the file via HTTP.
-      publicUrl = format(
-        `https://storage.googleapis.com/${bucket.name}/${blob.name}`
-      );
-    });
+  handleUpdatingAndStoringElement('users', req, res, userId);
+  // if (req.file) {
+  //   const blob = bucket.file(`users/${req.file.originalname}`);
+  //   const blobStream = blob.createWriteStream();
+  //   blobStream.on('finish', async () => {
+  //     // The public URL can be used to directly access the file via HTTP.
+  //     publicUrl = format(
+  //       `https://storage.googleapis.com/${bucket.name}/${blob.name}`
+  //     );
+  //   });
 
-    let photoUrl = `https://storage.googleapis.com/${bucket.name}/users/${req.file.originalname}`;
-    let wholeBody = { ...req.body, photo: photoUrl };
+  //   let photoUrl = `https://storage.googleapis.com/${bucket.name}/users/${req.file.originalname}`;
+  //   let wholeBody = { ...req.body, photo: photoUrl };
 
-    const updatedUser = await User.findOneAndUpdate(
-      { _id: userId },
-      wholeBody,
-      {
-        new: true,
-        runValidators: true,
-      }
-    );
-    res.status(200).json({
-      status: 'success',
-      updatedUser,
-    });
-    blobStream.end(req.file.buffer);
-  } else {
-    let reqBodyLength = Object.keys(req.body).length;
+  //   const updatedUser = await User.findOneAndUpdate(
+  //     { _id: userId },
+  //     wholeBody,
+  //     {
+  //       new: true,
+  //       runValidators: true,
+  //     }
+  //   );
+  //   res.status(200).json({
+  //     status: 'success',
+  //     updatedUser,
+  //   });
+  //   blobStream.end(req.file.buffer);
+  // } else {
+  //   let reqBodyLength = Object.keys(req.body).length;
 
-    if (reqBodyLength === 0) {
-      return next(new AppError(ErrorMsgs.NO_BODY, 400));
-    }
-    if (!userId) {
-      return next(new AppError(ErrorMsgs.NO_USER_ID, 400));
-    }
-    const updatedUser = await User.findOneAndUpdate(
-      { _id: req.query.userId },
-      req.body,
-      {
-        new: true,
-        runValidators: true,
-      }
-    );
-    res.status(200).json({
-      status: 'success',
-      updatedUser,
-    });
-  }
+  //   if (reqBodyLength === 0) {
+  //     return next(new AppError(ErrorMsgs.NO_BODY, 400));
+  //   }
+  //   if (!userId) {
+  //     return next(new AppError(ErrorMsgs.NO_USER_ID, 400));
+  //   }
+  //   const updatedUser = await User.findOneAndUpdate(
+  //     { _id: req.query.userId },
+  //     req.body,
+  //     {
+  //       new: true,
+  //       runValidators: true,
+  //     }
+  //   );
+  //   res.status(200).json({
+  //     status: 'success',
+  //     updatedUser,
+  //   });
+  // }
 });
 
 //@desc Get Users By service
