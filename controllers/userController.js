@@ -139,7 +139,7 @@ exports.updateNotificationToken = catchAsync(async (req, res, next) => {
   let foundUser;
   if (notificationToken) {
     foundUser = await User.findByIdAndUpdate(
-      req.user.id,
+      req.query.userId,
       { notificationToken },
       {
         new: true,
@@ -148,7 +148,7 @@ exports.updateNotificationToken = catchAsync(async (req, res, next) => {
     );
   } else {
     foundUser = await User.findByIdAndUpdate(
-      req.user.id,
+      req.query.userId,
       { notificationToken: null },
       {
         new: true,
@@ -206,8 +206,6 @@ exports.notifyDeliveryAndShops = catchAsync(async (req, res, next) => {
     let shopOwnerDoc = await User.findOne({ _id: shopOwnerId });
 
     let shopOwnerRegistrationToken = shopOwnerDoc.notificationToken;
-
-    console.log(shopOwnerRegistrationToken);
     var payload = {
       data: {
         type: 'order',
@@ -215,7 +213,9 @@ exports.notifyDeliveryAndShops = catchAsync(async (req, res, next) => {
         shopId: String(shopToBeNotified._id),
       },
     };
-    sendNotification(shopOwnerRegistrationToken, payload, res);
+    if (shopOwnerRegistrationToken !== null) {
+      sendNotification(shopOwnerRegistrationToken, payload);
+    }
   }
 
   //Filter in find for all the delivery boys to notify them.
@@ -224,6 +224,7 @@ exports.notifyDeliveryAndShops = catchAsync(async (req, res, next) => {
     .map((user) => user.notificationToken)
     .filter((token) => token);
   // Will be sent to all the delivery in the system
+
   const message = {
     data: {
       userType: 'delivery',
@@ -231,7 +232,9 @@ exports.notifyDeliveryAndShops = catchAsync(async (req, res, next) => {
     },
     topic: 'users',
   };
-  sendMultipleNotification(userRegistrationTokens, message, 'users', res);
+  if (userRegistrationTokens) {
+    sendMultipleNotification(userRegistrationTokens, message, 'users', res);
+  }
   res.json({
     success: 'success',
   });

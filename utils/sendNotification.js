@@ -7,7 +7,7 @@ admin.initializeApp({
 });
 
 //This function takes notification token and payload and it sends notification to a proper device
-exports.sendNotification = (notificationToken, payload, res) => {
+exports.sendNotification = (notificationToken, payload) => {
   var options = {
     priority: 'high',
     timeToLive: 60 * 60 * 24,
@@ -18,7 +18,6 @@ exports.sendNotification = (notificationToken, payload, res) => {
     .sendToDevice(notificationToken, payload, options)
     .then((response1) => {
       console.log('Message sent successfully', response1);
-      console.log(response1.results[0].error);
     })
     .catch((err) => console.log('Error in sending message', err));
 };
