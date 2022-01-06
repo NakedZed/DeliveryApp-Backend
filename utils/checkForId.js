@@ -67,3 +67,11 @@ exports.checkForIdExistenceAndValidityOrder = (req, res, next) => {
   }
   next();
 };
+exports.checkForIdExistenceAndValidityQuickOrder = (req, res, next) => {
+  if (!req.query.quickOrderId) {
+    return next(new AppError(ErrorMsgs.NO_ORDER_ID, 400));
+  } else if (req.query.quickOrderId.length !== 24) {
+    return next(new AppError(ErrorMsgs.INVALID_ORDER_ID, 400));
+  }
+  next();
+};
