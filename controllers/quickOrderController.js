@@ -16,7 +16,7 @@ exports.addQuickOrder = catchAsync(async (req, res, next) => {
     .map((user) => user.notificationToken)
     .filter((token) => token);
   // Will be sent to all the delivery in the system
-
+  console.log('>>>>>>>>>>>>>>>>>', userRegistrationTokens);
   const message = {
     data: {
       userType: req.query.userType,
@@ -24,7 +24,7 @@ exports.addQuickOrder = catchAsync(async (req, res, next) => {
     },
     topic: 'users',
   };
-  if (userRegistrationTokens) {
+  if (userRegistrationTokens.length > 0) {
     sendMultipleNotification(userRegistrationTokens, message, 'users', res);
   }
   res.status(200).json({
