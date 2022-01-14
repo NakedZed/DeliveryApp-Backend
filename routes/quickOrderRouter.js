@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router(); //We created sub application for quickOrders
-
+const { protect } = require('./../controllers/authController');
 const {
   addQuickOrder,
   deleteQuickOrder,
@@ -16,7 +16,7 @@ const {
 
 router
   .route('/')
-  .post(addQuickOrder)
+  .post(protect, addQuickOrder)
   .delete(checkForIdExistenceAndValidityQuickOrder, deleteQuickOrder)
   .patch(
     checkForIdExistenceAndValidityQuickOrder,

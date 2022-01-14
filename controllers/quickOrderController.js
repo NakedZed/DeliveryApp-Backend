@@ -9,7 +9,9 @@ const {
 } = require('../utils/sendNotification');
 
 exports.addQuickOrder = catchAsync(async (req, res, next) => {
-  let quickOrder = await QuickOrder.create(req.body);
+  let user = req.user._id;
+  let wholeBody = { ...req.body, user };
+  let quickOrder = await QuickOrder.create(wholeBody);
 
   const users = await User.find({ userType: 'delivery' });
   const userRegistrationTokens = users
@@ -44,7 +46,9 @@ exports.deleteQuickOrder = catchAsync(async (req, res, next) => {
 });
 exports.getQuickOrderById = catchAsync(async (req, res, next) => {
   let { quickOrderId } = req.query;
-  let foundQuickOrder = await QuickOrder.findOne({ _id: quickOrderId });
+  let foundQuickOrder = await QuickOrder.findOne({
+    _id: quickOrderId,
+  }).populate('user');
   res.status(200).json({
     status: 'success',
     foundQuickOrder,
@@ -74,7 +78,9 @@ exports.getQuickOrdersForDelivery = catchAsync(async (req, res, next) => {
   if (req.query.userId) {
     let quickOrders = await QuickOrder.find({
       delivery: req.query.userId,
-    }).populate('delivery');
+    })
+      .populate('delivery')
+      .populate('user');
     res.status(200).json({
       status: 'success',
       quickOrders,

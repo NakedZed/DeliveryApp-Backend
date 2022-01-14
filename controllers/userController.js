@@ -238,7 +238,7 @@ exports.notifyDeliveryAndShops = catchAsync(async (req, res, next) => {
     },
     topic: 'users',
   };
-  if (userRegistrationTokens) {
+  if (userRegistrationTokens.length > 0) {
     sendMultipleNotification(userRegistrationTokens, message, 'users', res);
   }
   res.json({

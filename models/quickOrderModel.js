@@ -18,6 +18,11 @@ const quickOrderSchema = new mongoose.Schema({
   description: {
     type: String,
   },
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    default: null,
+  },
 });
 
 const QuickOrder = new mongoose.model('QuickOrder', quickOrderSchema);
