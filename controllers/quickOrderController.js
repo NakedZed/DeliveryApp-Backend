@@ -8,17 +8,17 @@ const {
   sendMultipleNotification,
 } = require('../utils/sendNotification');
 
+//@desc Add quick order and notify all delivery boys
+//@route POST /api/v1/quickOrders/
+//access PUBLIC
+//NOTE we pass here the user who made the quick order in the body of the req.
 exports.addQuickOrder = catchAsync(async (req, res, next) => {
-  let user = req.user._id;
-  let wholeBody = { ...req.body, user };
-  let quickOrder = await QuickOrder.create(wholeBody);
-
+  let quickOrder = await QuickOrder.create(req.body);
   const users = await User.find({ userType: 'delivery' });
   const userRegistrationTokens = users
     .map((user) => user.notificationToken)
     .filter((token) => token);
   // Will be sent to all the delivery in the system
-  console.log('>>>>>>>>>>>>>>>>>', userRegistrationTokens);
   const message = {
     data: {
       userType: req.query.userType,
@@ -34,6 +34,9 @@ exports.addQuickOrder = catchAsync(async (req, res, next) => {
     quickOrder,
   });
 });
+//@desc Delete quick order by passing quick order ID
+//@route DELETE /api/v1/quickOrders/
+//access PUBLIC
 exports.deleteQuickOrder = catchAsync(async (req, res, next) => {
   let { quickOrderId } = req.query;
   let deletedQuickOrder = await QuickOrder.findOneAndDelete({
@@ -44,6 +47,9 @@ exports.deleteQuickOrder = catchAsync(async (req, res, next) => {
     deletedQuickOrder,
   });
 });
+//@desc Get quick order by passing quick order ID
+//@route GET /api/v1/quickOrders/
+//access PUBLIC
 exports.getQuickOrderById = catchAsync(async (req, res, next) => {
   let { quickOrderId } = req.query;
   let foundQuickOrder = await QuickOrder.findOne({
@@ -54,13 +60,16 @@ exports.getQuickOrderById = catchAsync(async (req, res, next) => {
     foundQuickOrder,
   });
 });
+//@desc Update quick order by passing quick order ID and deliveryId
+//@route GET /api/v1/quickOrders/
+//access PUBLIC
 exports.updateQuickOrder = catchAsync(async (req, res, next) => {
-  let { userId, quickOrderId } = req.query;
+  let { deliveryId, quickOrderId } = req.query;
   let quickOrder = await QuickOrder.findOne({ _id: quickOrderId });
   if (quickOrder.delivery === null) {
     let updatedQuickOrder = await QuickOrder.findOneAndUpdate(
       { _id: quickOrderId },
-      { delivery: userId },
+      { delivery: deliveryId },
       {
         new: true,
         runValidators: true,
@@ -71,13 +80,17 @@ exports.updateQuickOrder = catchAsync(async (req, res, next) => {
       updatedQuickOrder,
     });
   } else {
-    return next(new AppError('لقد حدث خطأ ما'));
+    return next(new AppError('لقد حدث خطأ ما', 400));
   }
 });
+//@desc Get quick orders by passing deliveryId
+//@route GET /api/v1/quickOrders/quickOrdersForDelivery
+//access PUBLIC
+//Note if we didnt pass deliveryId we will get all quickorders that are not assigned for delivery
 exports.getQuickOrdersForDelivery = catchAsync(async (req, res, next) => {
-  if (req.query.userId) {
+  if (req.query.deliveryId) {
     let quickOrders = await QuickOrder.find({
-      delivery: req.query.userId,
+      delivery: req.query.deliveryId,
     })
       .populate('delivery')
       .populate('user');

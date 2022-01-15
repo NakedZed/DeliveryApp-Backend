@@ -11,18 +11,13 @@ const {
 
 const {
   checkForIdExistenceAndValidityQuickOrder,
-  checkForIdExistenceAndValidityUser,
 } = require('./../utils/checkForId');
 
 router
   .route('/')
-  .post(protect, addQuickOrder)
+  .post(addQuickOrder)
   .delete(checkForIdExistenceAndValidityQuickOrder, deleteQuickOrder)
-  .patch(
-    checkForIdExistenceAndValidityQuickOrder,
-    checkForIdExistenceAndValidityUser,
-    updateQuickOrder
-  );
+  .patch(checkForIdExistenceAndValidityQuickOrder, updateQuickOrder);
 
 router.get(
   '/quickOrder',
