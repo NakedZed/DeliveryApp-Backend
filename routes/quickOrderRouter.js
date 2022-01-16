@@ -7,6 +7,7 @@ const {
   getQuickOrderById,
   updateQuickOrder,
   getQuickOrdersForDelivery,
+  getAllQuickOrder,
 } = require('./../controllers/quickOrderController');
 
 const {
@@ -17,7 +18,8 @@ router
   .route('/')
   .post(addQuickOrder)
   .delete(checkForIdExistenceAndValidityQuickOrder, deleteQuickOrder)
-  .patch(checkForIdExistenceAndValidityQuickOrder, updateQuickOrder);
+  .patch(checkForIdExistenceAndValidityQuickOrder, updateQuickOrder)
+  .get(getAllQuickOrder);
 
 router.get(
   '/quickOrder',

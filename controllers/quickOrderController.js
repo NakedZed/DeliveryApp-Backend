@@ -2,11 +2,7 @@ const AppError = require('../utils/appError');
 const User = require('./../models/userModel');
 const QuickOrder = require('./../models/quickOrderModel');
 const catchAsync = require('../utils/catchAsync');
-const ErrorMsgs = require('./../utils/ErrorMsgsConstants');
-const {
-  sendNotification,
-  sendMultipleNotification,
-} = require('../utils/sendNotification');
+const { sendMultipleNotification } = require('../utils/sendNotification');
 
 //@desc Add quick order and notify all delivery boys
 //@route POST /api/v1/quickOrders/
@@ -107,4 +103,17 @@ exports.getQuickOrdersForDelivery = catchAsync(async (req, res, next) => {
       quickOrders,
     });
   }
+});
+//@desc Get all quick orders
+//@route GET /api/v1/quickOrders/
+//access PUBLIC
+exports.getAllQuickOrder = catchAsync(async (req, res, next) => {
+  let quickOrders = await QuickOrder.find()
+    .populate('user')
+    .populate('delivery');
+
+  res.status(200).json({
+    status: 'success',
+    quickOrders,
+  });
 });
