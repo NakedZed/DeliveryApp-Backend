@@ -196,12 +196,15 @@ exports.notifyDeliveryAndShops = catchAsync(async (req, res, next) => {
       },
       topic: 'shops',
     };
-    sendMultipleNotification(
-      shopOwnerRegistrationTokens,
-      message,
-      'shops',
-      res
-    );
+    //This condition is to make sure that there is shopOwnerRegisterationsTokens in the array.
+    if (shopOwnerRegistrationTokens.length > 0) {
+      sendMultipleNotification(
+        shopOwnerRegistrationTokens,
+        message,
+        'shops',
+        res
+      );
+    }
   } else {
     let shopId = req.body.shopIds[0];
 
@@ -243,5 +246,19 @@ exports.notifyDeliveryAndShops = catchAsync(async (req, res, next) => {
   }
   res.json({
     success: 'success',
+  });
+});
+
+//@desc Delete user by id
+//@route Delete /api/v1/users/user ==> Pass user id to be deleted in the query params
+//access PUBLIC
+exports.deleteUserById = catchAsync(async (req, res, next) => {
+  let { userId } = req.query;
+  let deletedUser = await User.findOneAndDelete({
+    _id: userId,
+  });
+  res.status(200).json({
+    status: 'success',
+    deletedUser,
   });
 });

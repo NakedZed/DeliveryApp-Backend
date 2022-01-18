@@ -50,7 +50,9 @@ exports.getQuickOrderById = catchAsync(async (req, res, next) => {
   let { quickOrderId } = req.query;
   let foundQuickOrder = await QuickOrder.findOne({
     _id: quickOrderId,
-  }).populate('user');
+  })
+    .populate('user')
+    .populate('delivery');
   res.status(200).json({
     status: 'success',
     foundQuickOrder,
@@ -107,7 +109,7 @@ exports.getQuickOrdersForDelivery = catchAsync(async (req, res, next) => {
 //@desc Get all quick orders
 //@route GET /api/v1/quickOrders/
 //access PUBLIC
-exports.getAllQuickOrder = catchAsync(async (req, res, next) => {
+exports.getAllQuickOrders = catchAsync(async (req, res, next) => {
   let quickOrders = await QuickOrder.find()
     .populate('user')
     .populate('delivery');

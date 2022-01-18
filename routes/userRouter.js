@@ -19,6 +19,7 @@ let {
   getUsersByService,
   updateNotificationToken,
   notifyDeliveryAndShops,
+  deleteUserById,
 } = require('./../controllers/userController');
 
 let {
@@ -49,7 +50,8 @@ router
     uploadPhoto,
     resizePhoto,
     updateUserById
-  );
+  )
+  .delete(checkForIdExistenceAndValidityUser, deleteUserById);
 router.route('/forgetPassword').post(forgetPassword);
 router.route('/verifyAndReset').post(verifyAndReset);
 router.route('/notifyDeliveryAndShops').post(notifyDeliveryAndShops);
