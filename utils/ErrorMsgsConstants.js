@@ -37,6 +37,8 @@ let ErrorMsgs = {
   ////////////////////////
   NO_ORDER_ID: 'من فضلك ادخل رقم الطلب',
   INVALID_ORDER_ID: 'من فضلك ادخل رقم الطلب صحيحا',
+
+  INVALID_QUICK_ORDERS: 'من فضلك ادخل الاودرات المراد حذفها',
 };
 
 module.exports = ErrorMsgs;

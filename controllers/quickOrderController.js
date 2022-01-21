@@ -2,6 +2,7 @@ const AppError = require('../utils/appError');
 const User = require('./../models/userModel');
 const QuickOrder = require('./../models/quickOrderModel');
 const catchAsync = require('../utils/catchAsync');
+const ErrorMsgs = require('./../utils/ErrorMsgsConstants');
 const { sendMultipleNotification } = require('../utils/sendNotification');
 
 //@desc Add quick order and notify all delivery boys
@@ -117,5 +118,24 @@ exports.getAllQuickOrders = catchAsync(async (req, res, next) => {
   res.status(200).json({
     status: 'success',
     quickOrders,
+  });
+});
+
+//@desc Delete multiple quick orders
+//@route Delete /api/v1/quickOrders/
+//access PUBLIC
+exports.deleteMultipleQuickOrders = catchAsync(async (req, res, next) => {
+  if (req.body.quickOrders.length === 0) {
+    return next(new AppError(ErrorMsgs.INVALID_QUICK_ORDERS, 400));
+  }
+  let { quickOrders } = req.body;
+  let deletedQuickOrder = await QuickOrder.deleteMany({
+    _id: {
+      $in: quickOrders,
+    },
+  });
+  res.status(200).json({
+    status: 'success',
+    count: deletedQuickOrder.deletedCount,
   });
 });
