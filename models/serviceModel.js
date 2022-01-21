@@ -5,6 +5,9 @@ const serviceSchema = new mongoose.Schema({
     type: String,
   },
   photo: { type: String },
+  userType: {
+    type: String,
+  },
 });
 
 const Service = new mongoose.model('Service', serviceSchema);
