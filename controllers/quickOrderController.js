@@ -65,10 +65,29 @@ exports.getQuickOrderById = catchAsync(async (req, res, next) => {
 exports.updateQuickOrder = catchAsync(async (req, res, next) => {
   let { deliveryId, quickOrderId } = req.query;
   let quickOrder = await QuickOrder.findOne({ _id: quickOrderId });
-  if (quickOrder.delivery === null) {
+
+  if (quickOrder.delivery) {
+    if (deliveryId) {
+      return next(new AppError('لقد حدث خطأ ما', 400));
+    } else {
+      let updatedQuickOrder = await QuickOrder.findOneAndUpdate(
+        { _id: quickOrderId },
+        req.body,
+        {
+          new: true,
+          runValidators: true,
+        }
+      );
+      res.status(200).json({
+        status: 'success',
+        updatedQuickOrder,
+      });
+    }
+  } else if (quickOrder.delivery === null) {
+    let wholeBody = { ...req.body, delivery: deliveryId };
     let updatedQuickOrder = await QuickOrder.findOneAndUpdate(
       { _id: quickOrderId },
-      { delivery: deliveryId },
+      wholeBody,
       {
         new: true,
         runValidators: true,
@@ -78,8 +97,6 @@ exports.updateQuickOrder = catchAsync(async (req, res, next) => {
       status: 'success',
       updatedQuickOrder,
     });
-  } else {
-    return next(new AppError('لقد حدث خطأ ما', 400));
   }
 });
 //@desc Get quick orders by passing deliveryId
