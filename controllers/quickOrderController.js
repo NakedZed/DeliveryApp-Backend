@@ -100,7 +100,9 @@ exports.getQuickOrdersForDelivery = catchAsync(async (req, res, next) => {
   } else {
     let quickOrders = await QuickOrder.find({
       delivery: null,
-    });
+    })
+      .populate('delivery')
+      .populate('user');
     res.status(200).json({
       status: 'success',
       quickOrders,
