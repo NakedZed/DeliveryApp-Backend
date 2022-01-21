@@ -26,6 +26,9 @@ const quickOrderSchema = new mongoose.Schema({
   status: {
     type: String,
   },
+  useType: {
+    type: String,
+  },
 });
 
 const QuickOrder = new mongoose.model('QuickOrder', quickOrderSchema);
