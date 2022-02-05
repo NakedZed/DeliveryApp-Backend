@@ -20,6 +20,7 @@ let {
   updateNotificationToken,
   notifyDeliveryAndShops,
   deleteUserById,
+  notifyAllUsers,
 } = require('./../controllers/userController');
 
 let {
@@ -55,5 +56,6 @@ router
 router.route('/forgetPassword').post(forgetPassword);
 router.route('/verifyAndReset').post(verifyAndReset);
 router.route('/notifyDeliveryAndShops').post(notifyDeliveryAndShops);
+router.route('/notifyAllUsers').post(notifyAllUsers);
 
 module.exports = router;

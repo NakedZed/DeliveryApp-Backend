@@ -43,7 +43,7 @@ exports.handleStoringImageAndCreatingElement = catchAsync(
         createdElement,
       });
     } else {
-      console.log('hello');
+     
       const blob = bucket.file(`${schemaType}/${req.file.originalname}`);
       const blobStream = blob.createWriteStream();
       blobStream.on('finish', async () => {

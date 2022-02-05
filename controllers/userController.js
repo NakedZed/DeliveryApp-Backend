@@ -262,3 +262,29 @@ exports.deleteUserById = catchAsync(async (req, res, next) => {
     deletedUser,
   });
 });
+
+//@desc Notify all users in the system
+//@route Delete /api/v1/users/notifyAllUsers
+//access PUBLIC
+exports.notifyAllUsers = catchAsync(async (req, res, next) => {
+  const users = await User.find({ userType: 'user' });
+
+  const userRegistrationTokens = users
+    .map((user) => user.notificationToken)
+    .filter((token) => token);
+  const message = {
+    data: {
+      msg: req.body.msg,
+      title: req.body.title,
+      type: 'announcement',
+    },
+    topic: 'users',
+  };
+  console.log(message, userRegistrationTokens);
+  if (userRegistrationTokens.length > 0) {
+    sendMultipleNotification(userRegistrationTokens, message, 'users', res);
+  }
+  res.status(200).json({
+    status: 'success',
+  });
+});

@@ -7,8 +7,8 @@ let ErrorMsgs = {
   NO_PHOTO: 'من فضلك ادخل صورة',
   INVALID_PHONE_OR_PASSWORD: 'من فضلك تأكد من كلمة المرور ورقم الهاتف',
   NO_PHONE_OR_PASSWORD: 'من فضلك ادخل الهاتف وكلمة المرور',
-  DUPLICATE_USERNAME: 'من فضلك ادخل اسم مستخدم اخر',
-  DUPLICATE_PHONE: 'من فضلك ادخل رقم هاتف اخر',
+  DUPLICATE_USERNAME: 'اسم المستخدم موجود بالفعل من فضلك ادخل اسم مستخدم اخر',
+  DUPLICATE_PHONE: 'رقم الهاتف موجود بالفعل من فضلك ادخل رقم هاتف اخر',
   COMPARE_PASSWORD: 'من فضلك تأكد من ان كلمة المرور متطابقة',
   INVALID_PHONE: 'من فضلك ادخل رقم الهاتف صحيحا',
   /////////

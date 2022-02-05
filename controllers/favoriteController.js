@@ -23,8 +23,9 @@ exports.addShopForUserInFavorites = catchAsync(async (req, res, next) => {
 //access PUBLIC
 exports.getFavoriteShopsForUser = catchAsync(async (req, res, next) => {
   let { userId } = req.query;
-  let favorite = await Favorite.findOne({ user: userId });
-
+  let favorite = await Favorite.findOne({ user: userId }).populate(
+    'favoriteShops'
+  );
   res.status(200).json({
     status: 'success',
     favoriteShops: favorite.favoriteShops,

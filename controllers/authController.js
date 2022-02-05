@@ -186,10 +186,12 @@ exports.protect = catchAsync(async (req, res, next) => {
 });
 //TODO:Add ServiceID, AccountSID and authToken in heroku config vars
 exports.forgetPassword = catchAsync(async (req, res, next) => {
+  let { phone } = req.query;
   let data = await client.verify
     .services(process.env.serviceId)
+    // to: `+201007959398`,
     .verifications.create({
-      to: `+201007959398`,
+      to: `+2${phone}`,
       channel: 'sms',
     });
 
@@ -200,11 +202,12 @@ exports.forgetPassword = catchAsync(async (req, res, next) => {
 });
 
 exports.verifyAndReset = catchAsync(async (req, res, next) => {
+  let { phone, code } = req.query;
   let response = await client.verify
     .services(process.env.serviceId)
     .verificationChecks.create({
-      to: `+201007959398`,
-      code: '954233',
+      to: `+2${phone}`,
+      code,
     });
 
   if (response.status === 'approved') {
