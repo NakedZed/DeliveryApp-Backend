@@ -12,7 +12,7 @@ exports.getAllNotifications = catchAsync(async (req, res, next) => {
 
 exports.deleteNotification = catchAsync(async (req, res, next) => {
   let { notificationId } = req.query;
-  let deletedNotification = await User.findOneAndDelete({
+  let deletedNotification = await Notification.findOneAndDelete({
     _id: notificationId,
   });
   res.status(200).json({
