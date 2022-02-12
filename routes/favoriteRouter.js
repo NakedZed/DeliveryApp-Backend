@@ -1,5 +1,5 @@
 const express = require('express');
-const router = express.Router(); //We created sub application for products
+const router = express.Router(); //We created sub application for favorites
 const { protect } = require('./../controllers/authController');
 
 const {

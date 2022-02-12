@@ -29,6 +29,9 @@ const quickOrderSchema = new mongoose.Schema({
   useType: {
     type: String,
   },
+  count: {
+    type: Number,
+  },
 });
 
 const QuickOrder = new mongoose.model('QuickOrder', quickOrderSchema);
