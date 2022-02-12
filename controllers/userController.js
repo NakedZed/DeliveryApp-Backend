@@ -10,6 +10,7 @@ const {
   handleStoringImageAndCreatingElement,
   handleUpdatingAndStoringElement,
 } = require('../utils/firebaseStorage');
+const Notification = require('./../models/notificationModel');
 
 const {
   sendNotification,
