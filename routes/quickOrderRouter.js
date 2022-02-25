@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router(); //We created sub application for quickOrders
+const { uploadPhoto, resizePhoto } = require('../utils/multerConfiguration');
 const { protect } = require('./../controllers/authController');
 const {
   addQuickOrder,
@@ -17,9 +18,14 @@ const {
 
 router
   .route('/')
-  .post(addQuickOrder)
+  .post(uploadPhoto, resizePhoto, addQuickOrder)
   .delete(checkForIdExistenceAndValidityQuickOrder, deleteQuickOrder)
-  .patch(checkForIdExistenceAndValidityQuickOrder, updateQuickOrder)
+  .patch(
+    uploadPhoto,
+    resizePhoto,
+    checkForIdExistenceAndValidityQuickOrder,
+    updateQuickOrder
+  )
   .get(getAllQuickOrders);
 
 router.get(

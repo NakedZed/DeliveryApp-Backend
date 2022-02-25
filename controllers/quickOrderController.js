@@ -4,32 +4,37 @@ const QuickOrder = require('./../models/quickOrderModel');
 const catchAsync = require('../utils/catchAsync');
 const ErrorMsgs = require('./../utils/ErrorMsgsConstants');
 const { sendMultipleNotification } = require('../utils/sendNotification');
+const {
+  handleStoringImageAndCreatingElement,
+  handleUpdatingAndStoringElement,
+} = require('../utils/firebaseStorage');
 
 //@desc Add quick order and notify all delivery boys
 //@route POST /api/v1/quickOrders/
 //access PUBLIC
 //NOTE we pass here the user who made the quick order in the body of the req.
 exports.addQuickOrder = catchAsync(async (req, res, next) => {
-  let quickOrder = await QuickOrder.create(req.body);
-  const users = await User.find({ userType: 'delivery' });
-  const userRegistrationTokens = users
-    .map((user) => user.notificationToken)
-    .filter((token) => token);
-  // Will be sent to all the delivery in the system
-  const message = {
-    data: {
-      userType: req.query.userType,
-      type: 'quickOrder',
-    },
-    topic: 'users',
-  };
-  if (userRegistrationTokens.length > 0) {
-    sendMultipleNotification(userRegistrationTokens, message, 'users', res);
-  }
-  res.status(200).json({
-    status: 'success',
-    quickOrder,
-  });
+  // let quickOrder = await QuickOrder.create(req.body);
+  handleStoringImageAndCreatingElement('quickOrders', req, res);
+  // const users = await User.find({ userType: 'delivery' });
+  // const userRegistrationTokens = users
+  //   .map((user) => user.notificationToken)
+  //   .filter((token) => token);
+  // // Will be sent to all the delivery in the system
+  // const message = {
+  //   data: {
+  //     userType: req.query.userType,
+  //     type: 'quickOrder',
+  //   },
+  //   topic: 'users',
+  // };
+  // if (userRegistrationTokens.length > 0) {
+  //   sendMultipleNotification(userRegistrationTokens, message, 'users', res);
+  // }
+  // res.status(200).json({
+  //   status: 'success',
+  //   quickOrder,
+  // });
 });
 //@desc Delete quick order by passing quick order ID
 //@route DELETE /api/v1/quickOrders/
@@ -70,33 +75,36 @@ exports.updateQuickOrder = catchAsync(async (req, res, next) => {
     if (deliveryId) {
       return next(new AppError('لقد حدث خطأ ما', 400));
     } else {
-      let updatedQuickOrder = await QuickOrder.findOneAndUpdate(
-        { _id: quickOrderId },
-        req.body,
-        {
-          new: true,
-          runValidators: true,
-        }
-      );
-      res.status(200).json({
-        status: 'success',
-        updatedQuickOrder,
-      });
+      // let updatedQuickOrder = await QuickOrder.findOneAndUpdate(
+      //   { _id: quickOrderId },
+      //   req.body,
+      //   {
+      //     new: true,
+      //     runValidators: true,
+      //   }
+      // );
+      // res.status(200).json({
+      //   status: 'success',
+      //   updatedQuickOrder,
+      // });
+      handleUpdatingAndStoringElement('quickOrders', req, res, quickOrderId);
     }
   } else if (quickOrder.delivery === null) {
-    let wholeBody = { ...req.body, delivery: deliveryId };
-    let updatedQuickOrder = await QuickOrder.findOneAndUpdate(
-      { _id: quickOrderId },
-      wholeBody,
-      {
-        new: true,
-        runValidators: true,
-      }
-    );
-    res.status(200).json({
-      status: 'success',
-      updatedQuickOrder,
-    });
+    // let wholeBody = { ...req.body, delivery: deliveryId };
+    // let updatedQuickOrder = await QuickOrder.findOneAndUpdate(
+    //   { _id: quickOrderId },
+    //   wholeBody,
+    //   {
+    //     new: true,
+    //     runValidators: true,
+    //   }
+    // );
+    // res.status(200).json({
+    //   status: 'success',
+    //   updatedQuickOrder,
+    // });
+    req.body = { ...req.body, delivery: deliveryId };
+    handleUpdatingAndStoringElement('quickOrders', req, res, quickOrderId);
   }
 });
 //@desc Get quick orders by passing deliveryId

@@ -6,7 +6,9 @@ const Shop = require('../models/shopModel');
 const Service = require('../models/serviceModel');
 const Product = require('../models/productModel');
 const User = require('../models/userModel');
+const QuickOrder = require('../models/quickOrderModel');
 // const { bucket } = require('./firebaseConfiguration');
+const { sendMultipleNotification } = require('../utils/sendNotification');
 const { Storage } = require('@google-cloud/storage');
 
 const storage = new Storage({
@@ -14,6 +16,24 @@ const storage = new Storage({
   keyFilename: 'delivery-app-5e621-firebase-adminsdk-kjin7-465d741a9b.json',
 });
 let bucket = storage.bucket('gs://delivery-app-5e621.appspot.com');
+
+const handleSendingQuickOrderNotifications = async (req, res) => {
+  const users = await User.find({ userType: 'delivery' });
+  const userRegistrationTokens = users
+    .map((user) => user.notificationToken)
+    .filter((token) => token);
+  // Will be sent to all the delivery in the system
+  const message = {
+    data: {
+      userType: req.query.userType,
+      type: 'quickOrder',
+    },
+    topic: 'users',
+  };
+  if (userRegistrationTokens.length > 0) {
+    sendMultipleNotification(userRegistrationTokens, message, 'users', res);
+  }
+};
 
 exports.handleStoringImageAndCreatingElement = catchAsync(
   async (schemaType, req, res) => {
@@ -34,16 +54,21 @@ exports.handleStoringImageAndCreatingElement = catchAsync(
       case 'services':
         Model = Service;
         break;
+      case 'quickOrders':
+        Model = QuickOrder;
+        break;
     }
 
     if (!req.file) {
       let createdElement = await Model.create(req.body);
+      if (Model === QuickOrder) {
+        handleSendingQuickOrderNotifications(req, res);
+      }
       res.status(200).json({
         status: 'success',
         createdElement,
       });
     } else {
-     
       const blob = bucket.file(`${schemaType}/${req.file.originalname}`);
       const blobStream = blob.createWriteStream();
       blobStream.on('finish', async () => {
@@ -55,6 +80,9 @@ exports.handleStoringImageAndCreatingElement = catchAsync(
       let photoUrl = `https://storage.googleapis.com/${bucket.name}/${schemaType}/${req.file.originalname}`;
       let wholeBody = { ...req.body, photo: photoUrl };
       let createdElement = await Model.create(wholeBody);
+      if (Model === QuickOrder) {
+        handleSendingQuickOrderNotifications(req, res);
+      }
       res.status(200).json({
         status: 'success',
         createdElement,
@@ -85,6 +113,9 @@ exports.handleUpdatingAndStoringElement = catchAsync(
         break;
       case 'users':
         Model = User;
+      case 'quickOrders':
+        Model = QuickOrder;
+        break;
     }
     let id =
       Model === Category
@@ -99,6 +130,8 @@ exports.handleUpdatingAndStoringElement = catchAsync(
         ? req.query.serviceId
         : Model === User
         ? req.query.userId
+        : Model === QuickOrder
+        ? req.query.quickOrderId
         : (id = id);
     if (!req.file) {
       let updatedElement = await Model.findOneAndUpdate({ _id: id }, req.body, {
