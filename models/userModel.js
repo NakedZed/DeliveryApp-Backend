@@ -37,6 +37,7 @@ const userSchema = new mongoose.Schema({
   },
   score: {
     type: Number,
+    default: null,
   },
   service: {
     type: mongoose.Schema.Types.ObjectId,

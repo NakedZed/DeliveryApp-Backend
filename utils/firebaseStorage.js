@@ -113,6 +113,7 @@ exports.handleUpdatingAndStoringElement = catchAsync(
         break;
       case 'users':
         Model = User;
+        break;
       case 'quickOrders':
         Model = QuickOrder;
         break;
@@ -138,6 +139,7 @@ exports.handleUpdatingAndStoringElement = catchAsync(
         new: true,
         runValidators: true,
       });
+      console.log(Model);
       res.status(200).json({
         status: 'success',
         updatedElement,
