@@ -10,10 +10,12 @@ const {
   getQuickOrdersForDelivery,
   getAllQuickOrders,
   deleteMultipleQuickOrders,
+  getQuickOrdersForUser
 } = require('./../controllers/quickOrderController');
 
 const {
   checkForIdExistenceAndValidityQuickOrder,
+  checkForIdExistenceAndValidityUser
 } = require('./../utils/checkForId');
 
 router
@@ -37,5 +39,6 @@ router.get(
 router.delete('/deleteMany', deleteMultipleQuickOrders);
 
 router.route('/quickOrdersForDelivery').get(getQuickOrdersForDelivery);
+router.route('/quickOrdersForUser').get(checkForIdExistenceAndValidityUser, getQuickOrdersForUser);
 
 module.exports = router;

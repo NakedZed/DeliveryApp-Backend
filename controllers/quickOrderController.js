@@ -166,3 +166,16 @@ exports.deleteMultipleQuickOrders = catchAsync(async (req, res, next) => {
     count: deletedQuickOrder.deletedCount,
   });
 });
+
+exports.getQuickOrdersForUser = catchAsync(async(req,res,next) =>{
+  let {userId} = req.query
+
+  let quickOrders = await QuickOrder.find({ user : userId })
+      .populate('delivery')
+    
+    res.status(200).json({
+      status: 'success',
+      count: quickOrders.length,
+      quickOrders,
+    });
+})
