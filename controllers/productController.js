@@ -59,3 +59,16 @@ exports.getProductsForAShop = catchAsync(async (req, res, next) => {
     products,
   });
 });
+
+//@desc Get all products in system
+//@route GET /api/v1/products/
+//access PUBLIC
+exports.getAllProducts = catchAsync(async (req, res, next) => {
+  let products = await Product.find().populate('shop');
+
+  res.status(200).json({
+    status: 'success',
+    count: products.length,
+    products,
+  });
+});

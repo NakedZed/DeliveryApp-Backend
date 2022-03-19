@@ -9,6 +9,7 @@ const {
   getProductById,
   deleteProductById,
   getProductsForAShop,
+  getAllProducts,
 } = require('../controllers/productController');
 
 const {
@@ -40,5 +41,7 @@ router
   .route('/productsForShop')
   .get(checkForIdExistenceAndValidityShop, getProductsForAShop);
 router.route('/:shopId/:subCategoryId');
+
+router.route('/').get(getAllProducts);
 
 module.exports = router;
