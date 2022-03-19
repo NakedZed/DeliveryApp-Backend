@@ -64,7 +64,7 @@ exports.getProductsForAShop = catchAsync(async (req, res, next) => {
 //@route GET /api/v1/products/
 //access PUBLIC
 exports.getAllProducts = catchAsync(async (req, res, next) => {
-  let products = await Product.find().populate('shop');
+  let products = await Product.find();
 
   res.status(200).json({
     status: 'success',
