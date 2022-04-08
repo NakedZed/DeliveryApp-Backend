@@ -9,7 +9,10 @@ const ErrorMsgs = require('../utils/ErrorMsgsConstants');
 const { bucket } = require('../utils/firebaseConfiguration');
 const dotenv = require('dotenv');
 dotenv.config({ path: './config.env' });
-const client = require('twilio')(process.env.accountSID, process.env.authToken);
+const client = require('twilio')(
+  'AC217f0419307f649d37a1af4d1980d36d',
+  '30ea3b4f62d5f27273bc74c3665703e0'
+);
 
 // const { Storage } = require('@google-cloud/storage');
 
