@@ -207,7 +207,7 @@ exports.forgetPassword = catchAsync(async (req, res, next) => {
       status: 'success',
     });
   } else {
-    return next(new AppError('ادخل رقم صحيح!'));
+    return next(new AppError('هذا الرقم غير موجود!'));
   }
 });
 
