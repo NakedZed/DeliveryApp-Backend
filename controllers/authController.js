@@ -191,7 +191,8 @@ exports.protect = catchAsync(async (req, res, next) => {
 exports.forgetPassword = catchAsync(async (req, res, next) => {
   let { phone } = req.query;
   let data = await client.verify
-    .services(process.env.serviceId)
+    //SerivceID
+    .services('VAb89361249413bef3292cffb6fddf84ab')
     // to: `+201007959398`,
     .verifications.create({
       to: `+2${phone}`,
@@ -207,7 +208,7 @@ exports.forgetPassword = catchAsync(async (req, res, next) => {
 exports.verifyAndReset = catchAsync(async (req, res, next) => {
   let { phone, code } = req.query;
   let response = await client.verify
-    .services(process.env.serviceId)
+    .services('VAb89361249413bef3292cffb6fddf84ab')
     .verificationChecks.create({
       to: `+2${phone}`,
       code,
