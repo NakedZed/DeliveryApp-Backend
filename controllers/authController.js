@@ -190,19 +190,25 @@ exports.protect = catchAsync(async (req, res, next) => {
 //TODO:Add ServiceID, AccountSID and authToken in heroku config vars
 exports.forgetPassword = catchAsync(async (req, res, next) => {
   let { phone } = req.query;
-  let data = await client.verify
-    //SerivceID
-    .services('VAb89361249413bef3292cffb6fddf84ab')
-    // to: `+201007959398`,
-    .verifications.create({
-      to: `+2${phone}`,
-      channel: 'sms',
-    });
+  let users = await User.find();
+  let phoneNumbersArr = users.map((user) => user.phone);
+  if (phoneNumbersArr.includes(phone)) {
+    let data = await client.verify
+      //SerivceID
+      .services('VAb89361249413bef3292cffb6fddf84ab')
+      // to: `+201007959398`,
+      .verifications.create({
+        to: `+2${phone}`,
+        channel: 'sms',
+      });
 
-  res.status(200).json({
-    data,
-    status: 'success',
-  });
+    res.status(200).json({
+      data,
+      status: 'success',
+    });
+  } else {
+    return next(new AppError('ادخل رقم صحيح!'));
+  }
 });
 
 exports.verifyAndReset = catchAsync(async (req, res, next) => {
