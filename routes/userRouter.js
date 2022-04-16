@@ -9,6 +9,7 @@ const {
   loginWithPhone,
   forgetPassword,
   verifyAndReset,
+  verifyPhoneNumber
 } = require('./../controllers/authController');
 
 let {
@@ -38,6 +39,7 @@ router.get(
   checkForIdExistenceAndValidityService,
   getUsersByService
 );
+router.get("/verifyPhoneNumber",verifyPhoneNumber)
 
 // Endpoint for updating the token
 router.patch('/notificationToken', protect, updateNotificationToken);

@@ -7,6 +7,10 @@ const notificationSchema = new mongoose.Schema({
   msg: {
     type: String,
   },
+  date: {
+    type: Date,
+    default: Date.now(),
+  },
 });
 
 const Notification = new mongoose.model('Notification', notificationSchema);

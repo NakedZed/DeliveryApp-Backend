@@ -17,7 +17,6 @@ exports.addShopForUserInFavorites = catchAsync(async (req, res, next) => {
     favorite,
   });
 });
-console.log("Hello")
 //@desc Get favorite shops for user ==> By providing userid in query
 //@route GET /api/v1/favorites/favorite
 //access PUBLIC
@@ -26,7 +25,6 @@ exports.getFavoriteShopsForUser = catchAsync(async (req, res, next) => {
   let favorite = await Favorite.findOne({ user: userId }).populate(
     'favoriteShops'
   );
-  console.log("Hello")
   res.status(200).json({
     status: 'success',
     favoriteShops: favorite.favoriteShops,

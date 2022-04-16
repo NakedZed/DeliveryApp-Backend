@@ -97,6 +97,28 @@ exports.signup = catchAsync(async (req, res, next) => {
     });
   }
 });
+
+exports.verifyPhoneNumber = catchAsync(async (req, res, next) => {
+  let {code , phone } = req.query;
+  let response = await client.verify
+  .services('VAb89361249413bef3292cffb6fddf84ab')
+  .verificationChecks.create({
+    to: `+2${phone}`,
+    code,
+  });
+
+  if (response.status === 'approved') {
+    const user = await User.findOne({ phone });
+    const token = signToken(user._id);
+    res.status(200).json({
+      status: 'sucess',
+      token,
+      userType: user.userType,
+      userId: user.id,
+    });
+  }
+})
+
 exports.loginWithPhone = catchAsync(async (req, res, next) => {
   console.log(req.body);
   const { phone, password } = req.body;
@@ -115,16 +137,31 @@ exports.loginWithPhone = catchAsync(async (req, res, next) => {
   if (!user || !(await user.correctPassword(password, user.password))) {
     return next(new AppError(ErrorMsgs.INVALID_PHONE_OR_PASSWORD));
   }
-  //if everything is ok, send the token to the client
-  const token = signToken(user._id);
-  // updateUserNotificationToken(req);
+
+  let data = await client.verify
+  //SerivceID
+  .services('VAb89361249413bef3292cffb6fddf84ab')
+  // to: `+201007959398`,
+  .verifications.create({
+    to: `+2${phone}`,
+    channel: 'sms',
+  });
 
   res.status(200).json({
-    status: 'sucess',
-    token,
-    userType: user.userType,
-    userId: user.id,
+    data,
+    status: 'success',
   });
+
+  //if everything is ok, send the token to the client
+  // const token = signToken(user._id);
+  // // updateUserNotificationToken(req);
+
+  // res.status(200).json({
+  //   status: 'sucess',
+  //   token,
+  //   userType: user.userType,
+  //   userId: user.id,
+  // });
 });
 exports.updatePassword = catchAsync(async (req, res, next) => {
   //1)Get current user from the collection

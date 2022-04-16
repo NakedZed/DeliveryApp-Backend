@@ -48,6 +48,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: null,
   },
+  blocked:{
+    type:Boolean,
+    default: null
+  }
 });
 
 userSchema.pre('save', async function (next) {
