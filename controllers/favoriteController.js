@@ -17,7 +17,7 @@ exports.addShopForUserInFavorites = catchAsync(async (req, res, next) => {
     favorite,
   });
 });
-
+console.log("Hello")
 //@desc Get favorite shops for user ==> By providing userid in query
 //@route GET /api/v1/favorites/favorite
 //access PUBLIC
