@@ -26,6 +26,7 @@ exports.getFavoriteShopsForUser = catchAsync(async (req, res, next) => {
   let favorite = await Favorite.findOne({ user: userId }).populate(
     'favoriteShops'
   );
+  console.log("Hello")
   res.status(200).json({
     status: 'success',
     favoriteShops: favorite.favoriteShops,
