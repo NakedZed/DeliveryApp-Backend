@@ -116,6 +116,8 @@ exports.verifyPhoneNumber = catchAsync(async (req, res, next) => {
       userType: user.userType,
       userId: user.id,
     });
+  }else{
+    return next(new AppError("من فضلك ادخل الكود صحيحا"))
   }
 })
 
