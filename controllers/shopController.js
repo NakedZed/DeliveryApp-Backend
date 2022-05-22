@@ -18,10 +18,20 @@ const {
 //access PRIVATE -> You have to be logged in.
 
 exports.createShop = catchAsync(async (req, res, next) => {
+  let { phone } = req.body;
+
   //Take id from the currently logged in user.
   req.body.owner = req.query.userId;
   //Getting the categoryId from the query  and setting it to be in the body of the request.
   req.body.category = req.query.categoryId;
+
+    //Checking for uniquness of phone number
+    if (phone) {
+      let phone = await Shop.findOne({ phone: req.body.phone });
+      if (phone) {
+        return next(new AppError(ErrorMsgs.DUPLICATE_PHONE, 400));
+      }
+    }
   handleStoringImageAndCreatingElement('shops', req, res);
 });
 //@desc get all shops in the system
