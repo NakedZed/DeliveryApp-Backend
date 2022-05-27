@@ -8,19 +8,24 @@ const Favorite = require('../models/favoriteModel');
 const ErrorMsgs = require('../utils/ErrorMsgsConstants');
 const { bucket } = require('../utils/firebaseConfiguration');
 const dotenv = require('dotenv');
+const twilio = require('twilio');
+// const { initializeApp } = require('firebase/app')
+// const {getAuth, RecaptchaVerifier, sign} = require('@firebase/auth')
+
+// initializeApp({
+//    projectId: 'delivery-app-5e621',
+//    apiKey:'AIzaSyAzjl9ywluyPBxvM4uM0hjkJXsMHQfEWTQ'
+// });
+
 dotenv.config({ path: './config.env' });
 const client = require('twilio')(
-  'AC217f0419307f649d37a1af4d1980d36d',
+  process.env.accountSID,
   process.env.authToken
   );
+  // const auth = getAuth();
+ 
+  
 
-// const { Storage } = require('@google-cloud/storage');
-
-// const storage = new Storage({
-//   projectId: 'delivery-app-5e621',
-//   keyFilename: 'delivery-app-5e621-firebase-adminsdk-kjin7-465d741a9b.json',
-// });
-// let bucket = storage.bucket('gs://delivery-app-5e621.appspot.com');
 
 signToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -122,7 +127,6 @@ exports.verifyPhoneNumber = catchAsync(async (req, res, next) => {
 })
 
 exports.loginWithPhone = catchAsync(async (req, res, next) => {
-  console.log(req.body);
   const { phone, password } = req.body;
   if (req.body.phone.length !== 11) {
     return next(new AppError(ErrorMsgs.INVALID_PHONE, 400));
@@ -140,23 +144,24 @@ exports.loginWithPhone = catchAsync(async (req, res, next) => {
     return next(new AppError(ErrorMsgs.INVALID_PHONE_OR_PASSWORD));
   }
 
-  let data = await client.verify
-  //SerivceID
-  .services('VAb89361249413bef3292cffb6fddf84ab')
-  // to: `+201007959398`,
-  .verifications.create({
-    to: `+2${phone}`,
-    channel: 'sms',
-  });
+  // let data = await client.verify
+  // //SerivceID
+  // .services('VAb89361249413bef3292cffb6fddf84ab')
+  // // to: `+201007959398`,
+  // .verifications.create({
+  //   to: `+2${phone}`,
+  //   channel: 'sms',
+  // });
 
-  res.status(200).json({
-    data,
-    status: 'success',
-  });
+  // res.status(200).json({
+  //   user,
+  //   status: 'success',
+  // });
 
   //if everything is ok, send the token to the client
   // const token = signToken(user._id);
   // // updateUserNotificationToken(req);
+  createSendToken(user, 201, res)
 
   // res.status(200).json({
   //   status: 'sucess',
@@ -177,7 +182,6 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
   ) {
     return next(new AppError(ErrorMsgs.COMPARE_PASSWORD, 400));
   }
-  console.log(foundUser);
   //3)If so, update the password
   foundUser.password = req.body.password;
   foundUser.passwordConfirm = req.body.passwordConfirm;
@@ -228,40 +232,62 @@ exports.protect = catchAsync(async (req, res, next) => {
 });
 //TODO:Add ServiceID, AccountSID and authToken in heroku config vars
 exports.forgetPassword = catchAsync(async (req, res, next) => {
+  let code
   let { phone } = req.query;
   let users = await User.find();
+ 
   let phoneNumbersArr = users.map((user) => user.phone);
-  if (phoneNumbersArr.includes(phone)) {
-    let data = await client.verify
-      //SerivceID
-      .services('VAb89361249413bef3292cffb6fddf84ab')
-      // to: `+201007959398`,
-      .verifications.create({
-        to: `+2${phone}`,
-        channel: 'sms',
-      });
 
-    res.status(200).json({
-      data,
-      status: 'success',
-    });
+  if (phoneNumbersArr.includes(phone)) {
+     let res = await client.messages.create({
+      from:"+19206968935",
+      body:"8000",
+      to:`+2${phone}`
+    })
+    code = String(res.body.replace(/ /g,'')).split('-')[1]
+    await User.findOneAndUpdate({phone},{
+      code
+    },{
+      new: true,
+        runValidators: true,
+    })
+  
   } else {
     return next(new AppError('هذا الرقم غير موجود!'));
   }
+  res.status(200).json({
+    // data,
+    status: 'success',
+  });
 });
 
 exports.verifyAndReset = catchAsync(async (req, res, next) => {
   let { phone, code } = req.query;
-  let response = await client.verify
-    .services('VAb89361249413bef3292cffb6fddf84ab')
-    .verificationChecks.create({
-      to: `+2${phone}`,
-      code,
-    });
+  // let response = await client.verify
+  //   .services('MGf0921b7a2dc28940d9ba8866b7ab6899')
+  //   .verificationChecks.create({
+  //     to: `+2${phone}`,
+  //     code,
+  //   });
+   let user =  await User.findOne({phone})
+  // if (response.status === 'approved') {
+  //   let user = await User.findOne({ phone: req.query.phone });
+    
+  //   user.password = req.body.password;
+  //   user.passwordConfirm = req.body.passwordConfirm;
+  //   await user.save();
+  //   //3)Log the user in, send JWT
+  //   const token = signToken(user._id);
+  //   res.status(200).json({
+  //     status: 'success',
+  //     token,
+  //     user,
+  //   });
+  // } else {
+  //   console.log('failed');
+  // }
 
-  if (response.status === 'approved') {
-    let user = await User.findOne({ phone: req.query.phone });
-    console.log(user);
+  if(user.code == code){
     user.password = req.body.password;
     user.passwordConfirm = req.body.passwordConfirm;
     await user.save();
@@ -272,7 +298,7 @@ exports.verifyAndReset = catchAsync(async (req, res, next) => {
       token,
       user,
     });
-  } else {
-    console.log('failed');
-  }
+  }else {
+      console.log('failed');
+    }
 });

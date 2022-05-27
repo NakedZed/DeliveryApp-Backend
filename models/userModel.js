@@ -51,6 +51,10 @@ const userSchema = new mongoose.Schema({
   blocked:{
     type:Boolean,
     default: null
+  },
+  code:{
+    type:Number,
+    default:null
   }
 });
 
