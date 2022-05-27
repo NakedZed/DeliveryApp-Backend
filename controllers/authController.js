@@ -7,25 +7,15 @@ const { format } = require('util');
 const Favorite = require('../models/favoriteModel');
 const ErrorMsgs = require('../utils/ErrorMsgsConstants');
 const { bucket } = require('../utils/firebaseConfiguration');
-const dotenv = require('dotenv');
+const dotenv = require('dotenv').config;
 const twilio = require('twilio');
-// const { initializeApp } = require('firebase/app')
-// const {getAuth, RecaptchaVerifier, sign} = require('@firebase/auth')
 
-// initializeApp({
-//    projectId: 'delivery-app-5e621',
-//    apiKey:'AIzaSyAzjl9ywluyPBxvM4uM0hjkJXsMHQfEWTQ'
-// });
 
-dotenv.config({ path: './config.env' });
+console.log(process.env)
+
 const client = require('twilio')(
   process.env.accountSID,
-  process.env.authToken
-  );
-  // const auth = getAuth();
- 
-  
-
+  process.env.authToken);
 
 signToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
