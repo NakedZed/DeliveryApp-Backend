@@ -232,16 +232,22 @@ exports.protect = catchAsync(async (req, res, next) => {
 });
 //TODO:Add ServiceID, AccountSID and authToken in heroku config vars
 exports.forgetPassword = catchAsync(async (req, res, next) => {
-  let code
+  let code;
+  let randNum = 0;
+
   let { phone } = req.query;
   let users = await User.find();
  
   let phoneNumbersArr = users.map((user) => user.phone);
 
+  //Generate random code from 4 numbers
+  for(let i = 1 ; i < 4; i++){
+ 	 randNum +=  String(Math.floor(Math.random() * 10));
+ }
   if (phoneNumbersArr.includes(phone)) {
      let res = await client.messages.create({
       from:"+19206968935",
-      body:"8000",
+      body: randNum, //randNum acting as a code 
       to:`+2${phone}`
     })
     code = String(res.body.replace(/ /g,'')).split('-')[1]
@@ -299,6 +305,6 @@ exports.verifyAndReset = catchAsync(async (req, res, next) => {
       user,
     });
   }else {
-      console.log('failed');
+    return next(new AppError('OPS!'));
     }
 });
