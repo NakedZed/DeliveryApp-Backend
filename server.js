@@ -1,23 +1,22 @@
-const mongoose = require('mongoose');
-const dotenv = require('dotenv');
-dotenv.config({ path: './config.env' });
-const app = require('./app');
+const mongoose = require("mongoose");
+const dotenv = require("dotenv");
+dotenv.config({ path: "./config.env" });
+const app = require("./app");
 
 const DB = process.env.DATABASE.replace(
-  '<PASSWORD>',
+  "<PASSWORD>",
   process.env.DATABASE_PASSWORD
 );
 //Connecting to our hosted DB
 
 //For any global exception in the application EX: logging undefined variable
-process.on('uncaughtException', (err) => {
+process.on("uncaughtException", (err) => {
   console.log(err.name, err.message);
-  console.log('Unhandled Exception!.. shutting down');
+  console.log("Unhandled Exception!.. shutting down");
 
   process.exit(1);
 });
-
-if (process.env.NODE_ENV === 'development') {
+if (process.env.NODE_ENV === "development") {
   mongoose
     .connect(process.env.DATABASE_LOCAL, {
       useNewUrlParser: true,
@@ -29,7 +28,7 @@ if (process.env.NODE_ENV === 'development') {
       useUnifiedTopology: true,
     })
     .then((con) => {
-      console.log('connected successfully with local DB');
+      console.log("connected successfully with local DB");
     });
 } else {
   mongoose
@@ -43,7 +42,7 @@ if (process.env.NODE_ENV === 'development') {
       useUnifiedTopology: true,
     })
     .then((con) => {
-      console.log('connected successfully with hosted DB');
+      console.log("connected successfully with hosted DB");
     });
 }
 const port = process.env.PORT || 8080;
@@ -53,17 +52,17 @@ const server = app.listen(port, () => {
 });
 
 //Globally handle any unhandled promise EX:(if the db is down or something like that)
-process.on('unhandledRejection', (err) => {
+process.on("unhandledRejection", (err) => {
   console.log(err);
-  console.log('Unhandled Rejection!.. shutting down');
+  console.log("Unhandled Rejection!.. shutting down");
   server.close(() => {
     process.exit(1);
   });
 });
 
-process.on('SIGTERM', () => {
-  console.log('SIGTERM Recieved. shutting down gracefully');
+process.on("SIGTERM", () => {
+  console.log("SIGTERM Recieved. shutting down gracefully");
   server.close(() => {
-    console.log('Process terminated!');
+    console.log("Process terminated!");
   });
 });

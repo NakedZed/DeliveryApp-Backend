@@ -1,6 +1,6 @@
-const mongoose = require('mongoose');
-const crypto = require('crypto');
-const bcrypt = require('bcryptjs');
+const mongoose = require("mongoose");
+const crypto = require("crypto");
+const bcrypt = require("bcryptjs");
 
 const userSchema = new mongoose.Schema({
   username: {
@@ -41,26 +41,26 @@ const userSchema = new mongoose.Schema({
   },
   service: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Service',
+    ref: "Service",
     default: null,
   },
   notificationToken: {
     type: String,
     default: null,
   },
-  blocked:{
-    type:Boolean,
-    default: null
+  blocked: {
+    type: Boolean,
+    default: null,
   },
-  code:{
-    type:Number,
-    default:null
-  }
+  code: {
+    type: Number,
+    default: null,
+  },
 });
 
-userSchema.pre('save', async function (next) {
+userSchema.pre("save", async function (next) {
   //Only run this function if password was modified
-  if (!this.isModified('password')) return next(); //if the signle document isnt changed
+  if (!this.isModified("password")) return next(); //if the signle document isnt changed
   //Hash the password with cost of 12
   this.password = await bcrypt.hash(this.password, 12);
   //Delete the password confirm field
@@ -88,11 +88,11 @@ userSchema.methods.changePasswordAfter = function (JWTTimeStamp) {
 };
 userSchema.methods.createPasswordResetToken = function () {
   //This token will be sent to the user and then user can create new PASSWORD
-  const resetToken = crypto.randomBytes(32).toString('hex');
+  const resetToken = crypto.randomBytes(32).toString("hex");
   this.passwordResetToken = crypto
-    .createHash('sha256')
+    .createHash("sha256")
     .update(resetToken)
-    .digest('hex');
+    .digest("hex");
 
   console.log({ resetToken }, this.passwordResetToken);
 
@@ -101,6 +101,6 @@ userSchema.methods.createPasswordResetToken = function () {
   return resetToken;
 };
 
-const User = new mongoose.model('User', userSchema);
+const User = new mongoose.model("User", userSchema);
 
 module.exports = User;

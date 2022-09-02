@@ -1,17 +1,17 @@
-const AppError = require('../utils/appError');
-const Shop = require('../models/shopModel');
-const Product = require('../models/productModel');
-const Favorite = require('../models/favoriteModel');
-const subCategory = require('../models/subCategoryModel');
-const Offer = require('../models/offerModel');
+const AppError = require("../utils/appError");
+const Shop = require("../models/shopModel");
+const Product = require("../models/productModel");
+const Favorite = require("../models/favoriteModel");
+const subCategory = require("../models/subCategoryModel");
+const Offer = require("../models/offerModel");
 
-const { format } = require('util');
-const catchAsync = require('../utils/catchAsync');
-const ErrorMsgs = require('./../utils/ErrorMsgsConstants');
+const { format } = require("util");
+const catchAsync = require("../utils/catchAsync");
+const ErrorMsgs = require("./../utils/ErrorMsgsConstants");
 const {
   handleStoringImageAndCreatingElement,
   handleUpdatingAndStoringElement,
-} = require('../utils/firebaseStorage');
+} = require("../utils/firebaseStorage");
 
 //@desc Create a shop(Represents any resturant etc...)
 //@route POST /api/v1/shops/shop => pass category id in the query
@@ -25,14 +25,14 @@ exports.createShop = catchAsync(async (req, res, next) => {
   //Getting the categoryId from the query  and setting it to be in the body of the request.
   req.body.category = req.query.categoryId;
 
-    //Checking for uniquness of phone number
+  //Checking for uniquness of phone number
+  if (phone) {
+    let phone = await Shop.findOne({ phone: req.body.phone });
     if (phone) {
-      let phone = await Shop.findOne({ phone: req.body.phone });
-      if (phone) {
-        return next(new AppError(ErrorMsgs.DUPLICATE_PHONE, 400));
-      }
+      return next(new AppError(ErrorMsgs.DUPLICATE_PHONE, 400));
     }
-  handleStoringImageAndCreatingElement('shops', req, res);
+  }
+  handleStoringImageAndCreatingElement("shops", req, res);
 });
 //@desc get all shops in the system
 //@route GET /api/v1/shops/
@@ -40,7 +40,7 @@ exports.createShop = catchAsync(async (req, res, next) => {
 exports.getAllShops = catchAsync(async (req, res, next) => {
   let shops = await Shop.find({}, { owner: 0 });
   res.status(200).json({
-    status: 'success',
+    status: "success",
     shops,
   });
 });
@@ -63,11 +63,11 @@ exports.getShopById = catchAsync(async (req, res, next) => {
     );
   }
   let shop = await Shop.findById(req.query.shopId)
-    .populate('owner')
-    .populate('category')
+    .populate("owner")
+    .populate("category")
     .exec();
   res.status(200).json({
-    status: 'success',
+    status: "success",
     shop,
     isFavorite,
   });
@@ -77,11 +77,11 @@ exports.getShopById = catchAsync(async (req, res, next) => {
 //access PUBLIC
 exports.getShopsByCategory = catchAsync(async (req, res, next) => {
   let shops = await Shop.find({ category: req.query.categoryId })
-    .populate('owner')
-    .populate('category')
+    .populate("owner")
+    .populate("category")
     .exec();
   res.status(200).json({
-    status: 'success',
+    status: "success",
     shops,
   });
 });
@@ -105,7 +105,7 @@ exports.deleteShopById = catchAsync(async (req, res, next) => {
   ]);
 
   res.status(200).json({
-    status: 'success',
+    status: "success",
     deletedShop,
   });
 });
@@ -114,7 +114,7 @@ exports.deleteShopById = catchAsync(async (req, res, next) => {
 //access PUBLIC
 exports.updateShopById = catchAsync(async (req, res, next) => {
   let { shopId } = req.query;
-  handleUpdatingAndStoringElement('shops', req, res, shopId);
+  handleUpdatingAndStoringElement("shops", req, res, shopId);
 });
 
 //@desc Get all shops for specific owner by providing ==> userId
@@ -124,7 +124,7 @@ exports.getShopsOwner = catchAsync(async (req, res, next) => {
   let { userId } = req.query;
   let shopsOwner = await Shop.find({ owner: userId });
   res.status(200).json({
-    status: 'success',
+    status: "success",
     shopsOwner,
   });
 });
@@ -154,7 +154,7 @@ exports.updateNotificationToken = catchAsync(async (req, res, next) => {
     );
   }
   res.status(200).json({
-    status: 'success',
+    status: "success",
     foundShop,
   });
 });

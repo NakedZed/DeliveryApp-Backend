@@ -1,21 +1,16 @@
-const User = require('./../models/userModel');
-const { promisify } = require('util');
-const jwt = require('jsonwebtoken');
-const catchAsync = require('./../utils/catchAsync');
-const AppError = require('../utils/appError');
-const { format } = require('util');
-const Favorite = require('../models/favoriteModel');
-const ErrorMsgs = require('../utils/ErrorMsgsConstants');
-const { bucket } = require('../utils/firebaseConfiguration');
-const dotenv = require('dotenv').config;
-const twilio = require('twilio');
+const User = require("./../models/userModel");
+const { promisify } = require("util");
+const jwt = require("jsonwebtoken");
+const catchAsync = require("./../utils/catchAsync");
+const AppError = require("../utils/appError");
+const { format } = require("util");
+const Favorite = require("../models/favoriteModel");
+const ErrorMsgs = require("../utils/ErrorMsgsConstants");
+const { bucket } = require("../utils/firebaseConfiguration");
+const dotenv = require("dotenv").config;
+const twilio = require("twilio");
 
-
-console.log(process.env)
-
-const client = require('twilio')(
-  process.env.accountSID,
-  process.env.authToken);
+const client = require("twilio")(process.env.accountSID, process.env.authToken);
 
 signToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -26,8 +21,9 @@ signToken = (id) => {
 createSendToken = (user, statusCode, res) => {
   //Creating a token by signing it with the payload of the newley created user and a secret
   const token = signToken(user._id);
+
   res.status(statusCode).json({
-    status: 'success',
+    status: "success",
     token,
     user,
   });
@@ -69,7 +65,7 @@ exports.signup = catchAsync(async (req, res, next) => {
   if (req.file) {
     const blob = bucket.file(`users/${req.file.originalname}`);
     const blobStream = blob.createWriteStream();
-    blobStream.on('finish', async () => {
+    blobStream.on("finish", async () => {
       // The public URL can be used to directly access the file via HTTP.
       publicUrl = format(
         `https://storage.googleapis.com/${bucket.name}/${blob.name}`
@@ -94,27 +90,27 @@ exports.signup = catchAsync(async (req, res, next) => {
 });
 
 exports.verifyPhoneNumber = catchAsync(async (req, res, next) => {
-  let {code , phone } = req.query;
+  let { code, phone } = req.query;
   let response = await client.verify
-  .services('VAb89361249413bef3292cffb6fddf84ab')
-  .verificationChecks.create({
-    to: `+2${phone}`,
-    code,
-  });
+    .services("VAb89361249413bef3292cffb6fddf84ab")
+    .verificationChecks.create({
+      to: `+2${phone}`,
+      code,
+    });
 
-  if (response.status === 'approved') {
+  if (response.status === "approved") {
     const user = await User.findOne({ phone });
     const token = signToken(user._id);
     res.status(200).json({
-      status: 'sucess',
+      status: "sucess",
       token,
       userType: user.userType,
       userId: user.id,
     });
-  }else{
-    return next(new AppError("من فضلك ادخل الكود صحيحا"))
+  } else {
+    return next(new AppError("من فضلك ادخل الكود صحيحا"));
   }
-})
+});
 
 exports.loginWithPhone = catchAsync(async (req, res, next) => {
   const { phone, password } = req.body;
@@ -133,32 +129,7 @@ exports.loginWithPhone = catchAsync(async (req, res, next) => {
   if (!user || !(await user.correctPassword(password, user.password))) {
     return next(new AppError(ErrorMsgs.INVALID_PHONE_OR_PASSWORD));
   }
-
-  // let data = await client.verify
-  // //SerivceID
-  // .services('VAb89361249413bef3292cffb6fddf84ab')
-  // // to: `+201007959398`,
-  // .verifications.create({
-  //   to: `+2${phone}`,
-  //   channel: 'sms',
-  // });
-
-  // res.status(200).json({
-  //   user,
-  //   status: 'success',
-  // });
-
-  //if everything is ok, send the token to the client
-  // const token = signToken(user._id);
-  // // updateUserNotificationToken(req);
-  createSendToken(user, 201, res)
-
-  // res.status(200).json({
-  //   status: 'sucess',
-  //   token,
-  //   userType: user.userType,
-  //   userId: user.id,
-  // });
+  createSendToken(user, 201, res);
 });
 exports.updatePassword = catchAsync(async (req, res, next) => {
   //1)Get current user from the collection
@@ -183,19 +154,20 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
 exports.protect = catchAsync(async (req, res, next) => {
   //1) Get the token and check if its exist
   let token;
+
   if (
     req.headers.authorization &&
-    req.headers.authorization.startsWith('Bearer')
+    req.headers.authorization.startsWith("Bearer")
   ) {
-    token = req.headers.authorization.split(' ')[1];
+    token = req.headers.authorization.split(" ")[1];
   }
 
-  if (!token && req.query.lang === 'ar') {
-    return next(new AppError('من فضلك قم بالدخول اولا لتحصل علي الصلاحيات'));
+  if (!token && req.query.lang === "ar") {
+    return next(new AppError("من فضلك قم بالدخول اولا لتحصل علي الصلاحيات"));
   }
   if (!token) {
     return next(
-      new AppError('You are not logged in, Please log in to get access', 401)
+      new AppError("You are not logged in, Please log in to get access", 401)
     );
   }
 
@@ -207,15 +179,16 @@ exports.protect = catchAsync(async (req, res, next) => {
   const currentUser = await User.findById(decoded.id);
   if (!currentUser) {
     return next(
-      new AppError('The token belongs to a user has no longer exists', 401)
+      new AppError("The token belongs to a user has no longer exists", 401)
     );
   }
   //4)Check if user changed password after the token was issued
   if (currentUser.changePasswordAfter(decoded.iat)) {
     return next(
-      new AppError('User recently changed password! please login again!', 401)
+      new AppError("User recently changed password! please login again!", 401)
     );
   }
+
   //Grants access to the proteced route
   req.user = currentUser;
   next();
@@ -227,33 +200,36 @@ exports.forgetPassword = catchAsync(async (req, res, next) => {
 
   let { phone } = req.query;
   let users = await User.find();
- 
+
   let phoneNumbersArr = users.map((user) => user.phone);
 
   //Generate random code from 4 numbers
-  for(let i = 1 ; i < 4; i++){
- 	 randNum +=  String(Math.floor(Math.random() * 10));
- }
+  for (let i = 1; i < 4; i++) {
+    randNum += String(Math.floor(Math.random() * 10));
+  }
   if (phoneNumbersArr.includes(phone)) {
-     let res = await client.messages.create({
-      from:"+19206968935",
-      body: randNum, //randNum acting as a code 
-      to:`+2${phone}`
-    })
-    code = String(res.body.replace(/ /g,'')).split('-')[1]
-    await User.findOneAndUpdate({phone},{
-      code
-    },{
-      new: true,
+    let res = await client.messages.create({
+      from: "+19206968935",
+      body: randNum, //randNum acting as a code
+      to: `+2${phone}`,
+    });
+    code = String(res.body.replace(/ /g, "")).split("-")[1];
+    await User.findOneAndUpdate(
+      { phone },
+      {
+        code,
+      },
+      {
+        new: true,
         runValidators: true,
-    })
-  
+      }
+    );
   } else {
-    return next(new AppError('هذا الرقم غير موجود!'));
+    return next(new AppError("هذا الرقم غير موجود!"));
   }
   res.status(200).json({
     // data,
-    status: 'success',
+    status: "success",
   });
 });
 
@@ -265,10 +241,10 @@ exports.verifyAndReset = catchAsync(async (req, res, next) => {
   //     to: `+2${phone}`,
   //     code,
   //   });
-   let user =  await User.findOne({phone})
+  let user = await User.findOne({ phone });
   // if (response.status === 'approved') {
   //   let user = await User.findOne({ phone: req.query.phone });
-    
+
   //   user.password = req.body.password;
   //   user.passwordConfirm = req.body.passwordConfirm;
   //   await user.save();
@@ -283,18 +259,18 @@ exports.verifyAndReset = catchAsync(async (req, res, next) => {
   //   console.log('failed');
   // }
 
-  if(user.code == code){
+  if (user.code == code) {
     user.password = req.body.password;
     user.passwordConfirm = req.body.passwordConfirm;
     await user.save();
     //3)Log the user in, send JWT
     const token = signToken(user._id);
     res.status(200).json({
-      status: 'success',
+      status: "success",
       token,
       user,
     });
-  }else {
-    return next(new AppError('OPS!'));
-    }
+  } else {
+    return next(new AppError("OPS!"));
+  }
 });

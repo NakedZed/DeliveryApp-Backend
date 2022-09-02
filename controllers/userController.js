@@ -1,32 +1,32 @@
-const AppError = require('../utils/appError');
-const User = require('./../models/userModel');
-const Shop = require('./../models/shopModel');
-const { format } = require('util');
-const catchAsync = require('../utils/catchAsync');
-const ErrorMsgs = require('./../utils/ErrorMsgsConstants');
-const { bucket } = require('../utils/firebaseConfiguration');
-const admin = require('firebase-admin');
+const AppError = require("../utils/appError");
+const User = require("./../models/userModel");
+const Shop = require("./../models/shopModel");
+const Review = require("./../models/reviewModel");
+const { format } = require("util");
+const catchAsync = require("../utils/catchAsync");
+const ErrorMsgs = require("./../utils/ErrorMsgsConstants");
+
 const {
   handleStoringImageAndCreatingElement,
   handleUpdatingAndStoringElement,
-} = require('../utils/firebaseStorage');
-const Notification = require('./../models/notificationModel');
+} = require("../utils/firebaseStorage");
+const Notification = require("./../models/notificationModel");
 
 const {
   sendNotification,
   sendMultipleNotification,
-} = require('../utils/sendNotification');
-var mongoose = require('mongoose');
+} = require("../utils/sendNotification");
+var mongoose = require("mongoose");
 
 //@desc Get All Users
 //@route Get /api/v1/users
 //access PUBLIC
-
 exports.getAllUsers = catchAsync(async (req, res, next) => {
   //We pass object with key(Field we wanna return or not) : Value -> 0 dont return it with the result , 1 return it
   let users = await User.find({}, { password: 0 });
+
   res.status(200).json({
-    status: 'success',
+    status: "success",
     users,
   });
 });
@@ -40,10 +40,36 @@ exports.getUserById = catchAsync(async (req, res, next) => {
     return next(new AppError(ErrorMsgs.NO_USER_ID, 400));
   }
   let user = await User.findById(userId);
-  res.status(200).json({
-    status: 'success',
-    user,
-  });
+  //Here we checking for the userType --> if its delivery we will calculate avgRating and send it with the user document, if it is not we will just send the user.
+  if (user.userType == "delivery") {
+    let avgRating = null;
+    let sum = null;
+    let reviews = await Review.find({ delivery: req.query.userId });
+
+    let rates = reviews.map((review) => review.rating);
+
+    if (rates.length == 0) {
+      //Here this delivery has no rates yet, so we will set the avg rating to be 0
+      avgRating = 0;
+    } else {
+      sum = rates.reduce(
+        (previousValue, currentValue) => previousValue + currentValue,
+        0
+      );
+      avgRating = (sum / rates.length).toFixed(1);
+    }
+    //Concatinating the delivery doc with the calculated avg rating
+    user = { ...user._doc, avgRating };
+    res.status(200).json({
+      status: "success",
+      user,
+    });
+  } else {
+    res.status(200).json({
+      status: "success",
+      user,
+    });
+  }
 });
 
 //@desc Get Users By special Type(User, Delivery, Vendor)
@@ -51,7 +77,7 @@ exports.getUserById = catchAsync(async (req, res, next) => {
 //access PUBLIC
 exports.getUserByType = catchAsync(async (req, res, next) => {
   let { userType } = req.query;
-  let userTypeArray = ['user', 'vendor', 'delivery'];
+  let userTypeArray = ["user", "vendor", "delivery"];
 
   if (!userType) {
     return next(new AppError(ErrorMsgs.NO_USERTYPE, 400));
@@ -63,7 +89,7 @@ exports.getUserByType = catchAsync(async (req, res, next) => {
   let users = await User.find({ userType });
 
   res.status(200).json({
-    status: 'success',
+    status: "success",
     users,
   });
 });
@@ -73,7 +99,7 @@ exports.getUserByType = catchAsync(async (req, res, next) => {
 //access PUBLIC
 exports.updateUserById = catchAsync(async (req, res, next) => {
   let { userId } = req.query;
-  handleUpdatingAndStoringElement('users', req, res, userId);
+  handleUpdatingAndStoringElement("users", req, res, userId);
   // if (req.file) {
   //   const blob = bucket.file(`users/${req.file.originalname}`);
   //   const blobStream = blob.createWriteStream();
@@ -133,7 +159,7 @@ exports.getUsersByService = catchAsync(async (req, res, next) => {
     service: mongoose.Types.ObjectId(serviceId),
   });
   res.status(200).json({
-    status: 'success',
+    status: "success",
     users,
   });
 });
@@ -164,7 +190,7 @@ exports.updateNotificationToken = catchAsync(async (req, res, next) => {
     );
   }
   res.status(200).json({
-    status: 'success',
+    status: "success",
     foundUser,
   });
 });
@@ -178,13 +204,13 @@ exports.notifyDeliveryAndShops = catchAsync(async (req, res, next) => {
   //We are hanlding if we want to nofiy only one shop or Multiple shops
   if (req.body.shopIds.length > 1) {
     //Here we returning actual shops docs
-    let shopsToBeNotified = await Shop.find().where('_id').in(req.body.shopIds);
+    let shopsToBeNotified = await Shop.find().where("_id").in(req.body.shopIds);
 
     //We are mapping to get the shop owners ids
     let shopOwnersIds = shopsToBeNotified.map((shop) => shop.owner);
 
     //Finding the actual owner docs(In user collection)
-    let shopOwnersDocs = await User.find().where('_id').in(shopOwnersIds);
+    let shopOwnersDocs = await User.find().where("_id").in(shopOwnersIds);
 
     const shopOwnerRegistrationTokens = shopOwnersDocs
       .map((owner) => owner.notificationToken)
@@ -192,17 +218,17 @@ exports.notifyDeliveryAndShops = catchAsync(async (req, res, next) => {
 
     const message = {
       data: {
-        userType: 'vendor',
-        type: 'order',
+        userType: "vendor",
+        type: "order",
       },
-      topic: 'shops',
+      topic: "shops",
     };
     //This condition is to make sure that there is shopOwnerRegisterationsTokens in the array.
     if (shopOwnerRegistrationTokens.length > 0) {
       sendMultipleNotification(
         shopOwnerRegistrationTokens,
         message,
-        'shops',
+        "shops",
         res
       );
     }
@@ -218,8 +244,8 @@ exports.notifyDeliveryAndShops = catchAsync(async (req, res, next) => {
     let shopOwnerRegistrationToken = shopOwnerDoc.notificationToken;
     var payload = {
       data: {
-        type: 'order',
-        userType: 'vendor',
+        type: "order",
+        userType: "vendor",
         shopId: String(shopToBeNotified._id),
       },
     };
@@ -229,7 +255,7 @@ exports.notifyDeliveryAndShops = catchAsync(async (req, res, next) => {
   }
 
   //Filter in find for all the delivery boys to notify them.
-  const users = await User.find({ userType: 'delivery' });
+  const users = await User.find({ userType: "delivery" });
   const userRegistrationTokens = users
     .map((user) => user.notificationToken)
     .filter((token) => token);
@@ -237,16 +263,16 @@ exports.notifyDeliveryAndShops = catchAsync(async (req, res, next) => {
 
   const message = {
     data: {
-      userType: 'delivery',
-      type: 'order',
+      userType: "delivery",
+      type: "order",
     },
-    topic: 'users',
+    topic: "users",
   };
   if (userRegistrationTokens.length > 0) {
-    sendMultipleNotification(userRegistrationTokens, message, 'users', res);
+    sendMultipleNotification(userRegistrationTokens, message, "users", res);
   }
   res.json({
-    success: 'success',
+    success: "success",
   });
 });
 
@@ -259,7 +285,7 @@ exports.deleteUserById = catchAsync(async (req, res, next) => {
     _id: userId,
   });
   res.status(200).json({
-    status: 'success',
+    status: "success",
     deletedUser,
   });
 });
@@ -268,7 +294,7 @@ exports.deleteUserById = catchAsync(async (req, res, next) => {
 //@route Delete /api/v1/users/notifyAllUsers
 //access PUBLIC
 exports.notifyAllUsers = catchAsync(async (req, res, next) => {
-  const users = await User.find({ userType: 'user' });
+  const users = await User.find({ userType: "user" });
 
   const userRegistrationTokens = users
     .map((user) => user.notificationToken)
@@ -277,16 +303,31 @@ exports.notifyAllUsers = catchAsync(async (req, res, next) => {
     data: {
       msg: req.body.msg,
       title: req.body.title,
-      type: 'announcement',
+      type: "announcement",
     },
-    topic: 'users',
+    topic: "users",
   };
-  console.log('hello', userRegistrationTokens);
+
   if (userRegistrationTokens.length > 0) {
-    sendMultipleNotification(userRegistrationTokens, message, 'users', res);
+    sendMultipleNotification(userRegistrationTokens, message, "users", res);
     await Notification.create(req.body);
   }
   res.status(200).json({
-    status: 'success',
+    status: "success",
   });
+});
+exports.notifySingleUser = catchAsync(async (req, res, next) => {
+  let userId = req.query.userId;
+  const user = await User.findOne({ id: userId });
+  let notificationToken = user.notificationToken;
+  const payload = {
+    data: {
+      msg: req.body.msg,
+      title: req.body.title,
+      type: "announcement",
+    },
+    topic: "users",
+  };
+
+  sendNotification(notificationToken, payload);
 });

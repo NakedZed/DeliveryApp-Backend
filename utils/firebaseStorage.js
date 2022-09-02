@@ -1,24 +1,24 @@
-const { format } = require('util');
-const catchAsync = require('./catchAsync');
-const Category = require('../models/categoryModel');
-const Offer = require('../models/offerModel');
-const Shop = require('../models/shopModel');
-const Service = require('../models/serviceModel');
-const Product = require('../models/productModel');
-const User = require('../models/userModel');
-const QuickOrder = require('../models/quickOrderModel');
+const { format } = require("util");
+const catchAsync = require("./catchAsync");
+const Category = require("../models/categoryModel");
+const Offer = require("../models/offerModel");
+const Shop = require("../models/shopModel");
+const Service = require("../models/serviceModel");
+const Product = require("../models/productModel");
+const User = require("../models/userModel");
+const QuickOrder = require("../models/quickOrderModel");
 // const { bucket } = require('./firebaseConfiguration');
-const { sendMultipleNotification } = require('../utils/sendNotification');
-const { Storage } = require('@google-cloud/storage');
+const { sendMultipleNotification } = require("../utils/sendNotification");
+const { Storage } = require("@google-cloud/storage");
 
 const storage = new Storage({
-  projectId: 'delivery-app-5e621',
-  keyFilename: 'delivery-app-5e621-firebase-adminsdk-kjin7-465d741a9b.json',
+  projectId: "delivery-app-5e621",
+  keyFilename: "delivery-app-5e621-firebase-adminsdk-kjin7-465d741a9b.json",
 });
-let bucket = storage.bucket('gs://delivery-app-5e621.appspot.com');
+let bucket = storage.bucket("gs://delivery-app-5e621.appspot.com");
 
 const handleSendingQuickOrderNotifications = async (req, res) => {
-  const users = await User.find({ userType: 'delivery' });
+  const users = await User.find({ userType: "delivery" });
   const userRegistrationTokens = users
     .map((user) => user.notificationToken)
     .filter((token) => token);
@@ -26,12 +26,12 @@ const handleSendingQuickOrderNotifications = async (req, res) => {
   const message = {
     data: {
       userType: req.query.userType,
-      type: 'quickOrder',
+      type: "quickOrder",
     },
-    topic: 'users',
+    topic: "users",
   };
   if (userRegistrationTokens.length > 0) {
-    sendMultipleNotification(userRegistrationTokens, message, 'users', res);
+    sendMultipleNotification(userRegistrationTokens, message, "users", res);
   }
 };
 
@@ -39,22 +39,22 @@ exports.handleStoringImageAndCreatingElement = catchAsync(
   async (schemaType, req, res) => {
     let Model;
     switch (schemaType) {
-      case 'categories':
+      case "categories":
         Model = Category;
         break;
-      case 'offers':
+      case "offers":
         Model = Offer;
         break;
-      case 'products':
+      case "products":
         Model = Product;
         break;
-      case 'shops':
+      case "shops":
         Model = Shop;
         break;
-      case 'services':
+      case "services":
         Model = Service;
         break;
-      case 'quickOrders':
+      case "quickOrders":
         Model = QuickOrder;
         break;
     }
@@ -65,13 +65,13 @@ exports.handleStoringImageAndCreatingElement = catchAsync(
         handleSendingQuickOrderNotifications(req, res);
       }
       res.status(200).json({
-        status: 'success',
+        status: "success",
         createdElement,
       });
     } else {
       const blob = bucket.file(`${schemaType}/${req.file.originalname}`);
       const blobStream = blob.createWriteStream();
-      blobStream.on('finish', async () => {
+      blobStream.on("finish", async () => {
         // The public URL can be used to directly access the file via HTTP.
         publicUrl = format(
           `https://storage.googleapis.com/${bucket.name}/${blob.name}`
@@ -84,7 +84,7 @@ exports.handleStoringImageAndCreatingElement = catchAsync(
         handleSendingQuickOrderNotifications(req, res);
       }
       res.status(200).json({
-        status: 'success',
+        status: "success",
         createdElement,
       });
       blobStream.end(req.file.buffer);
@@ -96,25 +96,25 @@ exports.handleUpdatingAndStoringElement = catchAsync(
     let Model;
 
     switch (schemaType) {
-      case 'categories':
+      case "categories":
         Model = Category;
         break;
-      case 'offers':
+      case "offers":
         Model = Offer;
         break;
-      case 'products':
+      case "products":
         Model = Product;
         break;
-      case 'shops':
+      case "shops":
         Model = Shop;
         break;
-      case 'services':
+      case "services":
         Model = Service;
         break;
-      case 'users':
+      case "users":
         Model = User;
         break;
-      case 'quickOrders':
+      case "quickOrders":
         Model = QuickOrder;
         break;
     }
@@ -139,15 +139,15 @@ exports.handleUpdatingAndStoringElement = catchAsync(
         new: true,
         runValidators: true,
       });
-      console.log(Model);
+
       res.status(200).json({
-        status: 'success',
+        status: "success",
         updatedElement,
       });
     } else {
       const blob = bucket.file(`${schemaType}/${req.file.originalname}`);
       const blobStream = blob.createWriteStream();
-      blobStream.on('finish', async () => {
+      blobStream.on("finish", async () => {
         // The public URL can be used to directly access the file via HTTP.
         publicUrl = format(
           `https://storage.googleapis.com/${bucket.name}/${blob.name}`
@@ -165,7 +165,7 @@ exports.handleUpdatingAndStoringElement = catchAsync(
         }
       );
       res.status(200).json({
-        status: 'success',
+        status: "success",
         updatedElement,
       });
       blobStream.end(req.file.buffer);

@@ -1,6 +1,6 @@
-const catchAsync = require('../utils/catchAsync');
-const Favorite = require('../models/favoriteModel');
-const { ObjectId } = require('mongodb');
+const catchAsync = require("../utils/catchAsync");
+const Favorite = require("../models/favoriteModel");
+const { ObjectId } = require("mongodb");
 
 // @desc add favorite shops for user
 // @route POST /api/v1/shops/shop => pass shopIds array in the body and the userId in the query
@@ -13,7 +13,7 @@ exports.addShopForUserInFavorites = catchAsync(async (req, res, next) => {
 
   let favorite = await Favorite.create(req.body);
   res.status(200).json({
-    status: 'success',
+    status: "success",
     favorite,
   });
 });
@@ -23,10 +23,10 @@ exports.addShopForUserInFavorites = catchAsync(async (req, res, next) => {
 exports.getFavoriteShopsForUser = catchAsync(async (req, res, next) => {
   let { userId } = req.query;
   let favorite = await Favorite.findOne({ user: userId }).populate(
-    'favoriteShops'
+    "favoriteShops"
   );
   res.status(200).json({
-    status: 'success',
+    status: "success",
     favoriteShops: favorite.favoriteShops,
   });
 });
@@ -48,7 +48,7 @@ exports.addShopForFavorites = catchAsync(async (req, res, next) => {
     }
   );
   res.status(200).json({
-    status: 'success',
+    status: "success",
     updatedFavorite,
   });
 });
@@ -69,7 +69,7 @@ exports.removeShopFromFavorites = catchAsync(async (req, res, next) => {
     }
   );
   res.status(200).json({
-    status: 'success',
+    status: "success",
     updatedFavorite,
   });
 });
