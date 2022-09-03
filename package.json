@@ -14,6 +14,9 @@
     "type": "git",
     "url": "git+https://github.com/NakedZed/DeliveryApp-Backend.git"
   },
+  "engines": {
+    "node": "16.x"
+  },
   "author": "",
   "license": "ISC",
   "bugs": {
@@ -45,8 +48,5 @@
     "nodemailer": "^6.7.0",
     "twilio": "^3.72.0",
     "validator": "^13.7.0"
-  },
-  "engines": {
-    "node": "^12"
   }
 }
