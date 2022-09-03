@@ -7,15 +7,9 @@ const DB = process.env.DATABASE.replace(
   "<PASSWORD>",
   process.env.DATABASE_PASSWORD
 );
-//Connecting to our hosted DB
 
 //For any global exception in the application EX: logging undefined variable
-process.on("uncaughtException", (err) => {
-  console.log(err.name, err.message);
-  console.log("Unhandled Exception!.. shutting down");
 
-  process.exit(1);
-});
 if (process.env.NODE_ENV === "development") {
   mongoose
     .connect(process.env.DATABASE_LOCAL, {
@@ -29,6 +23,7 @@ if (process.env.NODE_ENV === "development") {
     })
     .then((con) => {
       console.log("connected successfully with local DB");
+      db = con.connection.db;
     });
 } else {
   mongoose
