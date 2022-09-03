@@ -54,5 +54,7 @@
       ]
     }
   ],
-  "rewrites": [{ "source": "/api/(.*)", "destination": "/api" }]
+  "rewrites": [
+    { "source": "api/v1/users/", "destination": "api/api/v1/users/" }
+  ]
 }
