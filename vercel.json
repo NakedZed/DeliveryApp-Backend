@@ -54,5 +54,7 @@
       ]
     }
   ],
-  "rewrites": [{ "source": "/controllers/(.*)", "destination": "/api" }]
+  "rewrites": [
+    { "source": "/api/v1/users/", "destination": "/controllers/api/v1/users/" }
+  ]
 }
