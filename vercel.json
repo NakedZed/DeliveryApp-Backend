@@ -54,12 +54,5 @@
       ]
     }
   ],
-  "rewrites": [{ "source": "/(.*)", "destination": "/api" }],
-
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "/"
-    }
-  ]
+  "rewrites": [{ "source": "/api/(.*)", "destination": "/api" }]
 }
