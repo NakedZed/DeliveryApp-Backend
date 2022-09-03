@@ -1,6 +1,15 @@
 {
   "version": 2,
-
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/api"
+    },
+    {
+      "source": "/products/(.*)",
+      "destination": "/api"
+    }
+  ],
   "headers": [
     {
       "source": "/service-worker.js",
@@ -8,16 +17,6 @@
         {
           "key": "Cache-Control",
           "value": "public, s=max-age=1, stale-while-revalidate"
-        },
-        { "key": "Access-Control-Allow-Credentials", "value": "true" },
-        { "key": "Access-Control-Allow-Origin", "value": "*" },
-        {
-          "key": "Access-Control-Allow-Methods",
-          "value": "GET,OPTIONS,PATCH,DELETE,POST,PUT"
-        },
-        {
-          "key": "Access-Control-Allow-Headers",
-          "value": "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version"
         }
       ]
     },
@@ -52,12 +51,6 @@
           "value": "true"
         }
       ]
-    }
-  ],
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/api"
     }
   ]
 }
