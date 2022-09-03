@@ -1,7 +1,7 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router(); //We created sub application for quickOrders
-const { uploadPhoto, resizePhoto } = require('../utils/multerConfiguration');
-const { protect } = require('./../controllers/authController');
+const { uploadPhoto, resizePhoto } = require("../utils/multerConfiguration");
+const { protect } = require("./../controllers/authController");
 const {
   addQuickOrder,
   deleteQuickOrder,
@@ -10,16 +10,16 @@ const {
   getQuickOrdersForDelivery,
   getAllQuickOrders,
   deleteMultipleQuickOrders,
-  getQuickOrdersForUser
-} = require('./../controllers/quickOrderController');
+  getQuickOrdersForUser,
+} = require("./../controllers/quickOrderController");
 
 const {
   checkForIdExistenceAndValidityQuickOrder,
-  checkForIdExistenceAndValidityUser
-} = require('./../utils/checkForId');
+  checkForIdExistenceAndValidityUser,
+} = require("../utils/checkForId");
 
 router
-  .route('/')
+  .route("/")
   .post(uploadPhoto, resizePhoto, addQuickOrder)
   .delete(checkForIdExistenceAndValidityQuickOrder, deleteQuickOrder)
   .patch(
@@ -31,14 +31,16 @@ router
   .get(getAllQuickOrders);
 
 router.get(
-  '/quickOrder',
+  "/quickOrder",
   checkForIdExistenceAndValidityQuickOrder,
   getQuickOrderById
 );
 
-router.delete('/deleteMany', deleteMultipleQuickOrders);
+router.delete("/deleteMany", deleteMultipleQuickOrders);
 
-router.route('/quickOrdersForDelivery').get(getQuickOrdersForDelivery);
-router.route('/quickOrdersForUser').get(checkForIdExistenceAndValidityUser, getQuickOrdersForUser);
+router.route("/quickOrdersForDelivery").get(getQuickOrdersForDelivery);
+router
+  .route("/quickOrdersForUser")
+  .get(checkForIdExistenceAndValidityUser, getQuickOrdersForUser);
 
 module.exports = router;

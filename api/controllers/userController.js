@@ -4,7 +4,7 @@ const Shop = require("./../models/shopModel");
 const Review = require("./../models/reviewModel");
 const { format } = require("util");
 const catchAsync = require("../utils/catchAsync");
-const ErrorMsgs = require("./../utils/ErrorMsgsConstants");
+const ErrorMsgs = require("../utils/ErrorMsgsConstants");
 
 const {
   handleStoringImageAndCreatingElement,

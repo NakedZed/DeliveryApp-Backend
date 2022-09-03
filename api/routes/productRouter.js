@@ -1,7 +1,7 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router(); //We created sub application for products
-const { protect } = require('./../controllers/authController');
-const { uploadPhoto, resizePhoto } = require('../utils/multerConfiguration');
+const { protect } = require("./../controllers/authController");
+const { uploadPhoto, resizePhoto } = require("../utils/multerConfiguration");
 
 const {
   createProduct,
@@ -10,16 +10,16 @@ const {
   deleteProductById,
   getProductsForAShop,
   getAllProducts,
-} = require('../controllers/productController');
+} = require("../controllers/productController");
 
 const {
   checkForIdExistenceAndValidityProduct,
   checkForIdExistenceAndValidityShop,
   checkForIdExistenceAndValiditySubCategory,
-} = require('../utils/checkForId');
+} = require("../utils/checkForId");
 
 router
-  .route('/product')
+  .route("/product")
   .patch(
     checkForIdExistenceAndValidityProduct,
     uploadPhoto,
@@ -38,10 +38,10 @@ router
   );
 
 router
-  .route('/productsForShop')
+  .route("/productsForShop")
   .get(checkForIdExistenceAndValidityShop, getProductsForAShop);
-router.route('/:shopId/:subCategoryId');
+router.route("/:shopId/:subCategoryId");
 
-router.route('/').get(getAllProducts);
+router.route("/").get(getAllProducts);
 
 module.exports = router;

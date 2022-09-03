@@ -8,7 +8,7 @@ const Product = require("../models/productModel");
 const User = require("../models/userModel");
 const QuickOrder = require("../models/quickOrderModel");
 // const { bucket } = require('./firebaseConfiguration');
-const { sendMultipleNotification } = require("../utils/sendNotification");
+const { sendMultipleNotification } = require("./sendNotification");
 const { Storage } = require("@google-cloud/storage");
 
 const storage = new Storage({

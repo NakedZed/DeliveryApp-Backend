@@ -1,4 +1,4 @@
-const catchAsync = require("../api/utils/catchAsync");
+const catchAsync = require("../utils/catchAsync");
 const Cart = require("../models/cartModel");
 const Product = require("../models/productModel");
 

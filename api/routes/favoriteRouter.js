@@ -1,30 +1,30 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router(); //We created sub application for favorites
-const { protect } = require('./../controllers/authController');
+const { protect } = require("./../controllers/authController");
 
 const {
   checkForIdExistenceAndValidityUser,
   checkForIdExistenceAndValidityShop,
-} = require('../utils/checkForId');
+} = require("../utils/checkForId");
 const {
   getFavoriteShopsForUser,
   addShopForFavorites,
   removeShopFromFavorites,
-} = require('../controllers/favoriteController');
+} = require("../controllers/favoriteController");
 
 router
-  .route('/favorite')
+  .route("/favorite")
   .get(checkForIdExistenceAndValidityUser, getFavoriteShopsForUser);
 
 router
-  .route('/addFavorite')
+  .route("/addFavorite")
   .patch(
     checkForIdExistenceAndValidityUser,
     checkForIdExistenceAndValidityShop,
     addShopForFavorites
   );
 router
-  .route('/removeFavorite')
+  .route("/removeFavorite")
   .patch(
     checkForIdExistenceAndValidityUser,
     checkForIdExistenceAndValidityShop,

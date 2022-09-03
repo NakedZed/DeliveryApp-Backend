@@ -1,20 +1,20 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router(); //We created sub application for products
 const {
   checkForIdExistenceAndValidityService,
-} = require('../utils/checkForId');
-const { uploadPhoto, resizePhoto } = require('../utils/multerConfiguration');
+} = require("../utils/checkForId");
+const { uploadPhoto, resizePhoto } = require("../utils/multerConfiguration");
 const {
   createService,
   deleteServiceById,
   getAllServices,
   updateServiceById,
   getServiceById,
-} = require('../controllers/serviceController');
+} = require("../controllers/serviceController");
 
-router.route('/').get(getAllServices);
+router.route("/").get(getAllServices);
 router
-  .route('/service')
+  .route("/service")
   .post(uploadPhoto, resizePhoto, createService)
   .get(checkForIdExistenceAndValidityService, getServiceById)
   .delete(checkForIdExistenceAndValidityService, deleteServiceById)

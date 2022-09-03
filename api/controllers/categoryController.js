@@ -1,16 +1,16 @@
-const catchAsync = require('../utils/catchAsync');
-const Category = require('../models/categoryModel');
+const catchAsync = require("../utils/catchAsync");
+const Category = require("../models/categoryModel");
 
 const {
   handleStoringImageAndCreatingElement,
   handleUpdatingAndStoringElement,
-} = require('../utils/firebaseStorage');
+} = require("../utils/firebaseStorage");
 
 //@desc Create a category(Represents if the Shop in the food category or anything else etc...)
 //@route POST /api/v1/category/
 //access PUBLIC
 exports.createCategory = catchAsync(async (req, res, next) => {
-  handleStoringImageAndCreatingElement('categories', req, res);
+  handleStoringImageAndCreatingElement("categories", req, res);
 });
 
 //@desc Get all categories
@@ -19,7 +19,7 @@ exports.createCategory = catchAsync(async (req, res, next) => {
 exports.getAllCategories = catchAsync(async (req, res, next) => {
   let categories = await Category.find({});
   res.status(200).json({
-    status: 'success',
+    status: "success",
     categories,
   });
 });
@@ -33,7 +33,7 @@ exports.deleteCategoryById = catchAsync(async (req, res, next) => {
   let deletedCategory = await Category.findOneAndDelete({ _id: categoryId });
 
   res.status(200).json({
-    status: 'success',
+    status: "success",
     deletedCategory,
   });
 });
@@ -44,7 +44,7 @@ exports.deleteCategoryById = catchAsync(async (req, res, next) => {
 exports.updateCategoryById = catchAsync(async (req, res, next) => {
   let { categoryId } = req.query;
 
-  handleUpdatingAndStoringElement('categories', req, res, categoryId);
+  handleUpdatingAndStoringElement("categories", req, res, categoryId);
 });
 
 //@desc Get a category by id
@@ -57,7 +57,7 @@ exports.getCategoryById = catchAsync(async (req, res, next) => {
     _id: categoryId,
   });
   res.status(200).json({
-    status: 'success',
+    status: "success",
     category,
   });
 });

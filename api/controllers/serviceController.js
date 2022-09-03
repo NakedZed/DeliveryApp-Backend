@@ -1,16 +1,16 @@
-const catchAsync = require('../utils/catchAsync');
-const Service = require('../models/serviceModel');
-var mongoose = require('mongoose');
+const catchAsync = require("../utils/catchAsync");
+const Service = require("../models/serviceModel");
+var mongoose = require("mongoose");
 const {
   handleStoringImageAndCreatingElement,
   handleUpdatingAndStoringElement,
-} = require('../utils/firebaseStorage');
+} = require("../utils/firebaseStorage");
 
 //@desc Create service
 //@route POST /api/v1/services/service
 //access PUBLIC
 exports.createService = catchAsync(async (req, res, next) => {
-  handleStoringImageAndCreatingElement('services', req, res);
+  handleStoringImageAndCreatingElement("services", req, res);
 });
 
 //@desc Get all services
@@ -19,7 +19,7 @@ exports.createService = catchAsync(async (req, res, next) => {
 exports.getAllServices = catchAsync(async (req, res, next) => {
   let services = await Service.find();
   res.status(200).json({
-    status: 'success',
+    status: "success",
     services,
   });
 });
@@ -32,7 +32,7 @@ exports.deleteServiceById = catchAsync(async (req, res, next) => {
     _id: req.query.serviceId,
   });
   res.status(200).json({
-    status: 'success',
+    status: "success",
     deletedService,
   });
 });
@@ -42,7 +42,7 @@ exports.deleteServiceById = catchAsync(async (req, res, next) => {
 //access PUBLIC
 exports.updateServiceById = catchAsync(async (req, res, next) => {
   let { serviceId } = req.query;
-  handleUpdatingAndStoringElement('services', req, res, serviceId);
+  handleUpdatingAndStoringElement("services", req, res, serviceId);
 });
 
 //@desc Get a service by Id
@@ -52,7 +52,7 @@ exports.getServiceById = catchAsync(async (req, res, next) => {
   let { serviceId } = req.query;
   let service = await Service.findById({ _id: serviceId });
   res.status(200).json({
-    status: 'success',
+    status: "success",
     service,
   });
 });

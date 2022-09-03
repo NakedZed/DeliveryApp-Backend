@@ -1,27 +1,27 @@
 const express = require("express");
 const compression = require("compression");
 const cors = require("cors");
-const userRouter = require("./routes/userRouter");
-const shopRouter = require("./routes/shopRouter");
-const categoryRouter = require("./routes/categoryRouter");
-const productRouter = require("./routes/productRouter");
-const offerRouter = require("./routes/offerRouter");
-const subCategoriesRouter = require("./routes/subCategoryRouter");
-const serviceRouter = require("./routes/serviceRouter");
-const favoriteRouter = require("./routes/favoriteRouter");
-const orderRouter = require("./routes/orderRouter");
-const cartRouter = require("./routes/cartRouter");
-const quickOrderRouter = require("./routes/quickOrderRouter");
-const notificationRouter = require("./routes/notificationRouter");
-const reviewRouter = require("./routes/reviewRouter");
-const AppError = require("./utils/appError");
+const userRouter = require("./api/routes/userRouter");
+const shopRouter = require("./api/routes/shopRouter");
+const categoryRouter = require("./api/routes/categoryRouter");
+const productRouter = require("./api/routes/productRouter");
+const offerRouter = require("./api/routes/offerRouter");
+const subCategoriesRouter = require("./api/routes/subCategoryRouter");
+const serviceRouter = require("./api/routes/serviceRouter");
+const favoriteRouter = require("./api/routes/favoriteRouter");
+const orderRouter = require("./api/routes/orderRouter");
+const cartRouter = require("./api/routes/cartRouter");
+const quickOrderRouter = require("./api/routes/quickOrderRouter");
+const notificationRouter = require("./api/routes/notificationRouter");
+const reviewRouter = require("./api/routes/reviewRouter");
+const AppError = require("./api/utils/appError");
 
 const app = express();
 app.use(express.urlencoded({ extended: true }));
 //core middlewares
 app.use(express.json());
 
-const globalErrorHandler = require("./controllers/errorController");
+const globalErrorHandler = require("./api/controllers/errorController");
 
 //Implement cors and compression
 app.use(cors());

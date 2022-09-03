@@ -1,7 +1,7 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router(); //We created sub application for shops
-const { protect } = require('./../controllers/authController');
-const { uploadPhoto, resizePhoto } = require('../utils/multerConfiguration');
+const { protect } = require("./../controllers/authController");
+const { uploadPhoto, resizePhoto } = require("../utils/multerConfiguration");
 
 const {
   createShop,
@@ -12,21 +12,21 @@ const {
   deleteShopById,
   getShopsOwner,
   updateNotificationToken,
-} = require('../controllers/shopController');
+} = require("../controllers/shopController");
 const {
   checkForIdExistenceAndValidityShop,
   checkForIdExistenceAndValidityCategory,
   checkForIdExistenceAndValidityUser,
-} = require('../utils/checkForId');
+} = require("../utils/checkForId");
 
 router.get(
-  '/shopsForCategory',
+  "/shopsForCategory",
   checkForIdExistenceAndValidityCategory,
   getShopsByCategory
 ); //Get all shops by a category ID
-router.route('/').get(getAllShops);
+router.route("/").get(getAllShops);
 router
-  .route('/shop')
+  .route("/shop")
   .get(checkForIdExistenceAndValidityShop, getShopById)
   .post(
     protect,
@@ -45,12 +45,12 @@ router
   );
 // Endpoint for updating the token
 router.patch(
-  '/notificationToken',
+  "/notificationToken",
   checkForIdExistenceAndValidityShop,
   updateNotificationToken
 );
 router
-  .route('/shopsForOwner')
+  .route("/shopsForOwner")
   .get(checkForIdExistenceAndValidityUser, getShopsOwner);
 
 module.exports = router;

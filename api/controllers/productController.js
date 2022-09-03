@@ -1,13 +1,13 @@
-const AppError = require('../utils/appError');
-const { format } = require('util');
-const catchAsync = require('../utils/catchAsync');
-const ErrorMsgs = require('./../utils/ErrorMsgsConstants');
-const Product = require('../models/productModel');
+const AppError = require("../utils/appError");
+const { format } = require("util");
+const catchAsync = require("../utils/catchAsync");
+const ErrorMsgs = require("../utils/ErrorMsgsConstants");
+const Product = require("../models/productModel");
 const {
   handleStoringImageAndCreatingElement,
   handleUpdatingAndStoringElement,
-} = require('../utils/firebaseStorage');
-const { bucket } = require('../utils/firebaseConfiguration');
+} = require("../utils/firebaseStorage");
+const { bucket } = require("../utils/firebaseConfiguration");
 
 //@desc Create a product(EX: sandwich aw ay 7aga tanya momkn tb2a mawgoda f shop)
 //@route POST /api/v1/products/:shopId/:subCategoryId ==> SubCategory represent any category inside the shop itself
@@ -15,7 +15,7 @@ const { bucket } = require('../utils/firebaseConfiguration');
 exports.createProduct = catchAsync(async (req, res, next) => {
   req.body.shop = req.query.shopId;
   req.body.subCategory = req.query.subCategoryId;
-  handleStoringImageAndCreatingElement('products', req, res);
+  handleStoringImageAndCreatingElement("products", req, res);
 });
 
 //@desc Get a product by id
@@ -24,7 +24,7 @@ exports.createProduct = catchAsync(async (req, res, next) => {
 exports.getProductById = catchAsync(async (req, res, next) => {
   let product = await Product.findById(req.query.productId);
   res.status(200).json({
-    status: 'success',
+    status: "success",
     product,
   });
 });
@@ -34,7 +34,7 @@ exports.getProductById = catchAsync(async (req, res, next) => {
 //access PUBLIC
 exports.updateProductById = catchAsync(async (req, res, next) => {
   let { productId } = req.query;
-  handleUpdatingAndStoringElement('products', req, res, productId);
+  handleUpdatingAndStoringElement("products", req, res, productId);
 });
 
 //@desc Delete a product by id
@@ -44,7 +44,7 @@ exports.deleteProductById = catchAsync(async (req, res, next) => {
   let { productId } = req.query;
   let deletedProduct = await Product.findOneAndDelete({ _id: productId });
   res.status(200).json({
-    status: 'success',
+    status: "success",
     deletedProduct,
   });
 });
@@ -55,7 +55,7 @@ exports.deleteProductById = catchAsync(async (req, res, next) => {
 exports.getProductsForAShop = catchAsync(async (req, res, next) => {
   let products = await Product.find({ shop: req.query.shopId });
   res.status(200).json({
-    status: 'success',
+    status: "success",
     products,
   });
 });
@@ -67,7 +67,7 @@ exports.getAllProducts = catchAsync(async (req, res, next) => {
   let products = await Product.find();
 
   res.status(200).json({
-    status: 'success',
+    status: "success",
     count: products.length,
     products,
   });
