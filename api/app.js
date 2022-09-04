@@ -23,6 +23,7 @@ app.use(express.json());
 
 const globalErrorHandler = require("./controllers/errorController");
 
+//test
 //Implement cors and compression
 app.use(cors());
 app.use(compression());
